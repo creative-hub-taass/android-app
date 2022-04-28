@@ -1,15 +1,23 @@
 package com.creativehub.app.model
 
-import java.time.Instant
-import java.time.OffsetDateTime
+import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDateTime
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 import java.util.*
 
+@Serializable
 data class Artwork(
-	override val id: UUID,
+	override val id: String,
 	override val timestamp: Instant,
 	override val lastUpdate: Instant,
 	override val creations: List<ArtworkCreation>,
-	val creationDateTime: OffsetDateTime,
+	val creationDateTime: LocalDateTime,
 	val name: String,
 	val description: String,
 	val type: String,
@@ -18,9 +26,23 @@ data class Artwork(
 	val images: Set<String>,
 	val onSale: Boolean,
 	val price: Double,
+	@Serializable(with = CurrencySerializer::class)
 	val currency: Currency,
 	val paymentEmail: String,
 	val availableCopies: Int,
-) : Publication<ArtworkCreation>(id, timestamp, lastUpdate, creations)
+) : Publication<ArtworkCreation>
 
 
+object CurrencySerializer : KSerializer<Currency> {
+	override val descriptor: SerialDescriptor =
+		PrimitiveSerialDescriptor("Currency", PrimitiveKind.STRING)
+
+	override fun serialize(encoder: Encoder, value: Currency) {
+		encoder.encodeString(value.toString())
+	}
+
+	override fun deserialize(decoder: Decoder): Currency {
+		val string = decoder.decodeString()
+		return Currency.getInstance(string)
+	}
+}
