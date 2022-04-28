@@ -10,7 +10,7 @@ interface IPublicUser {
 	val id: String
 	val username: String
 	val nickname: String
-	val creator: IPublicCreator
+	val creator: IPublicCreator?
 	val inspirerIds: Set<String>
 	val fanIds: Set<String>
 }
@@ -32,7 +32,7 @@ class User(
 	override val nickname: String,
 	val email: String,
 	val role: Role,
-	override val creator: Creator,
+	override val creator: Creator?,
 	override val inspirerIds: Set<String>,
 	override val fanIds: Set<String>,
 ) : IPublicUser

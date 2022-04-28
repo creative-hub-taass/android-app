@@ -2,7 +2,7 @@ package com.creativehub.app.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple200 = Color(0xFFBB86FC)
-val Purple500 = Color(0xFF6200EE)
-val Purple700 = Color(0xFF3700B3)
-val Teal200 = Color(0xFF03DAC5)
+val Primary200 = Color(0xff757de8)
+val Primary500 = Color(0xff3f51b5)
+val Primary700 = Color(0xff002984)
+val Secondary200 = Color(0xffffab91)
