@@ -7,17 +7,30 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navigation
+import com.creativehub.app.AppNav.*
+import com.creativehub.app.HomeNav.*
 import com.creativehub.app.ui.theme.CreativeHubTheme
 import com.creativehub.app.ui.views.HomeScreen
 import com.creativehub.app.ui.views.LoginScreen
+import com.creativehub.app.ui.views.RegisterScreen
 import com.creativehub.app.viewmodel.UserState
 import com.creativehub.app.viewmodel.UserStateViewModel
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 	private val userState by viewModels<UserStateViewModel>()
@@ -34,22 +47,59 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun CreativeHubApp() {
 	CreativeHubTheme {
-		Surface(
+		val navController = rememberNavController()
+		val backstackEntry = navController.currentBackStackEntryAsState()
+		val currentScreen = backstackEntry.value?.destination?.route
+		val vm = UserState.current
+		val startDestination = if (vm.isLoggedIn) Home.name else Login.name
+		val coroutineScope = rememberCoroutineScope()
+		Scaffold(
 			modifier = Modifier.fillMaxSize(),
-			color = MaterialTheme.colors.background
+			topBar = {
+				if (currentScreen == Home.name) {
+					TopAppBar(
+						title = { Text(stringResource(id = R.string.app_name)) },
+						actions = {
+							IconButton(onClick = {
+								coroutineScope.launch {
+									vm.signOut()
+								}
+							}) {
+								Icon(Icons.Filled.ExitToApp, null)
+							}
+						}
+					)
+				}
+			}
 		) {
-			ApplicationSwitcher()
+			NavHost(navController = navController,
+					startDestination = startDestination,
+					modifier = Modifier.padding(it)) {
+				navigation(startDestination = Feed.name, route = Home.name) {
+					composable(Feed.name) {
+						HomeScreen(navController)
+					}
+					composable(Profile.name) {
+						Text(text = Profile.name)
+					}
+					composable(Artwork.name) {
+						Text(text = Artwork.name)
+					}
+					composable(Event.name) {
+						Text(text = Event.name)
+					}
+					composable(Post.name) {
+						Text(text = Post.name)
+					}
+				}
+				composable(Login.name) {
+					LoginScreen(navController)
+				}
+				composable(Register.name) {
+					RegisterScreen(navController)
+				}
+			}
 		}
-	}
-}
-
-@Composable
-fun ApplicationSwitcher() {
-	val vm = UserState.current
-	if (vm.isLoggedIn) {
-		HomeScreen()
-	} else {
-		LoginScreen()
 	}
 }
 

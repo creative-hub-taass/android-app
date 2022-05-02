@@ -21,7 +21,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.creativehub.app.AppNav.Home
-import com.creativehub.app.AppNav.Register
+import com.creativehub.app.AppNav.Login
 import com.creativehub.app.R
 import com.creativehub.app.ui.theme.CreativeHubTheme
 import com.creativehub.app.ui.theme.Typography
@@ -30,14 +30,14 @@ import com.creativehub.app.viewmodel.UserStateViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun LoginScreen(navController: NavController) {
+fun RegisterScreen(navController: NavController) {
 	val vm = UserState.current
 	ConstraintLayout(Modifier.fillMaxSize()) {
-		val (loginCard, skipBtn, loader) = createRefs()
+		val (card, skipBtn, loader) = createRefs()
 		if (vm.isBusy) {
 			CircularProgressIndicator(modifier = Modifier.constrainAs(loader) { centerTo(parent) })
 		} else {
-			LoginCard(navController, Modifier.constrainAs(loginCard) { centerTo(parent) })
+			RegisterCard(navController, Modifier.constrainAs(card) { centerTo(parent) })
 		}
 		TextButton(onClick = { navController.navigate(Home.name) },
 				   modifier = Modifier.constrainAs(skipBtn) {
@@ -52,8 +52,9 @@ fun LoginScreen(navController: NavController) {
 }
 
 @Composable
-fun LoginCard(navController: NavController, modifier: Modifier) {
+fun RegisterCard(navController: NavController, modifier: Modifier) {
 	val vm = UserState.current
+	var nickname by remember { mutableStateOf("") }
 	var email by remember { mutableStateOf("") }
 	var password by remember { mutableStateOf("") }
 	var passwordVisible by remember { mutableStateOf(false) }
@@ -65,6 +66,13 @@ fun LoginCard(navController: NavController, modifier: Modifier) {
 			horizontalAlignment = Alignment.CenterHorizontally
 		) {
 			Text(stringResource(R.string.app_name), fontSize = 32.sp)
+			Spacer(modifier = Modifier.height(16.dp))
+			OutlinedTextField(
+				value = nickname,
+				onValueChange = { nickname = it },
+				label = { Text(stringResource(R.string.nickname)) },
+				singleLine = true
+			)
 			Spacer(modifier = Modifier.height(16.dp))
 			OutlinedTextField(
 				value = email,
@@ -97,20 +105,18 @@ fun LoginCard(navController: NavController, modifier: Modifier) {
 			Button(onClick = {
 				coroutineScope.launch {
 					vm.signIn(email, password)
-//					if (!vm.isLoggedIn) {
-//						scaffoldState.snackbarHostState.showSnackbar("Login failed. Try again.")
-//					}
-				}.invokeOnCompletion {
 					if (vm.isLoggedIn) {
 						navController.navigate(Home.name)
+					} else {
+						scaffoldState.snackbarHostState.showSnackbar("Registration failed. Try again.")
 					}
 				}
 			}) {
-				Text(stringResource(R.string.login).uppercase(), style = Typography.button)
+				Text(stringResource(R.string.sign_up).uppercase(), style = Typography.button)
 			}
 			Spacer(modifier = Modifier.height(16.dp))
-			TextButton(onClick = { navController.navigate(Register.name) }) {
-				Text(text = stringResource(R.string.not_registered_call))
+			TextButton(onClick = { navController.navigate(Login.name) }) {
+				Text(text = stringResource(R.string.already_registered_call))
 			}
 		}
 	}
@@ -118,7 +124,7 @@ fun LoginCard(navController: NavController, modifier: Modifier) {
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun LoginPreview() {
+fun RegisterPreview() {
 	CompositionLocalProvider(UserState provides UserStateViewModel()) {
 		CreativeHubTheme {
 			val navController = rememberNavController()

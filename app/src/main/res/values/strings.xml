@@ -3,4 +3,11 @@
 	<string name="hide_password">Hide password</string>
 	<string name="show_password">Show password</string>
 	<string name="login">Login</string>
+	<string name="skip_login">Continue as a visitor</string>
+	<string name="not_registered_call">Not registered yet? Sign up here</string>
+	<string name="sign_up">Register</string>
+	<string name="already_registered_call">Already registered? Sign in here</string>
+	<string name="email">E-mail</string>
+	<string name="password">Password</string>
+	<string name="nickname">Nickname</string>
 </resources>
