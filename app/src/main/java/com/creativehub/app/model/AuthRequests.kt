@@ -17,7 +17,7 @@ data class SocialLoginRequest(
 
 @Serializable
 data class RegistrationRequest(
+	val nickname: String,
 	val email: String,
 	val password: String,
-	val nickname: String,
 )

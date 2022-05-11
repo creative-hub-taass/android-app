@@ -20,26 +20,30 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.creativehub.app.AppNav.Home
-import com.creativehub.app.AppNav.Register
+import com.creativehub.app.Destination.Feed
+import com.creativehub.app.Destination.Register
 import com.creativehub.app.R
 import com.creativehub.app.ui.theme.CreativeHubTheme
 import com.creativehub.app.ui.theme.Typography
 import com.creativehub.app.viewmodel.UserState
 import com.creativehub.app.viewmodel.UserStateViewModel
-import kotlinx.coroutines.launch
 
 @Composable
-fun LoginScreen(navController: NavController) {
+fun LoginScreen(
+	navController: NavController,
+	onLoginClick: (email: String, password: String) -> Unit,
+) {
 	val vm = UserState.current
 	ConstraintLayout(Modifier.fillMaxSize()) {
 		val (loginCard, skipBtn, loader) = createRefs()
 		if (vm.isBusy) {
 			CircularProgressIndicator(modifier = Modifier.constrainAs(loader) { centerTo(parent) })
 		} else {
-			LoginCard(navController, Modifier.constrainAs(loginCard) { centerTo(parent) })
+			LoginCard(navController,
+					  Modifier.constrainAs(loginCard) { centerTo(parent) },
+					  onLoginClick)
 		}
-		TextButton(onClick = { navController.navigate(Home.name) },
+		TextButton(onClick = { navController.navigate(Feed.route) },
 				   modifier = Modifier.constrainAs(skipBtn) {
 					   bottom.linkTo(parent.bottom, margin = 16.dp)
 					   centerHorizontallyTo(parent)
@@ -52,13 +56,14 @@ fun LoginScreen(navController: NavController) {
 }
 
 @Composable
-fun LoginCard(navController: NavController, modifier: Modifier) {
-	val vm = UserState.current
+fun LoginCard(
+	navController: NavController,
+	modifier: Modifier,
+	onLoginClick: (email: String, password: String) -> Unit,
+) {
 	var email by remember { mutableStateOf("") }
 	var password by remember { mutableStateOf("") }
 	var passwordVisible by remember { mutableStateOf(false) }
-	val coroutineScope = rememberCoroutineScope()
-	val scaffoldState = rememberScaffoldState()
 	Card(modifier) {
 		Column(
 			modifier = Modifier.padding(24.dp, 24.dp),
@@ -94,22 +99,11 @@ fun LoginCard(navController: NavController, modifier: Modifier) {
 				}
 			)
 			Spacer(modifier = Modifier.height(16.dp))
-			Button(onClick = {
-				coroutineScope.launch {
-					vm.signIn(email, password)
-//					if (!vm.isLoggedIn) {
-//						scaffoldState.snackbarHostState.showSnackbar("Login failed. Try again.")
-//					}
-				}.invokeOnCompletion {
-					if (vm.isLoggedIn) {
-						navController.navigate(Home.name)
-					}
-				}
-			}) {
+			Button(onClick = { onLoginClick(email, password) }) {
 				Text(stringResource(R.string.login).uppercase(), style = Typography.button)
 			}
 			Spacer(modifier = Modifier.height(16.dp))
-			TextButton(onClick = { navController.navigate(Register.name) }) {
+			TextButton(onClick = { navController.navigate(Register.route) }) {
 				Text(text = stringResource(R.string.not_registered_call))
 			}
 		}
@@ -126,7 +120,7 @@ fun LoginPreview() {
 				modifier = Modifier.fillMaxSize(),
 				color = MaterialTheme.colors.background
 			) {
-				LoginScreen(navController)
+				LoginScreen(navController) { _, _ -> }
 			}
 		}
 	}
