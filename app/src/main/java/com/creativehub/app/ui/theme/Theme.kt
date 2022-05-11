@@ -34,7 +34,6 @@ fun CreativeHubTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Compo
 	} else {
 		LightColorPalette
 	}
-
 	MaterialTheme(
 		colors = colors,
 		typography = Typography,
