@@ -78,15 +78,26 @@ fun SignInButton(
 	}
 }
 
-@ExperimentalMaterialApi
 @Composable
 @Preview
-fun SignInButtonPreview() {
+fun GoogleSignInButtonPreview() {
 	SignInButton(
 		text = "Sign in with Google",
 		loadingText = "Signing in...",
 		isLoading = false,
 		icon = painterResource(id = R.drawable.ic_google_logo),
+		onClick = { }
+	)
+}
+
+@Composable
+@Preview
+fun FacebookSignInButtonPreview() {
+	SignInButton(
+		text = "Sign in with Facebook",
+		loadingText = "Signing in...",
+		isLoading = false,
+		icon = painterResource(id = R.drawable.ic_facebook_logo),
 		onClick = { }
 	)
 }

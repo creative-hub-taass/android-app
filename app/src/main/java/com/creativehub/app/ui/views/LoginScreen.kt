@@ -30,7 +30,7 @@ import com.creativehub.app.R
 import com.creativehub.app.ui.components.SignInButton
 import com.creativehub.app.ui.theme.CreativeHubTheme
 import com.creativehub.app.ui.theme.Typography
-import com.creativehub.app.util.AuthResultContract
+import com.creativehub.app.util.GoogleAuthResultContract
 import com.creativehub.app.viewmodel.LocalUserState
 import com.creativehub.app.viewmodel.UserStateViewModel
 import com.google.android.gms.common.api.ApiException
@@ -74,9 +74,8 @@ fun LoginCard(
 	var email by remember { mutableStateOf("") }
 	var password by remember { mutableStateOf("") }
 	var passwordVisible by remember { mutableStateOf(false) }
-	val signInRequestCode = 1
 	val context = LocalContext.current
-	val authResultLauncher = rememberLauncherForActivityResult(AuthResultContract()) { task ->
+	val googleAuthLauncher = rememberLauncherForActivityResult(GoogleAuthResultContract()) { task ->
 		try {
 			val account = task?.getResult(ApiException::class.java)
 			val mail = account?.email
@@ -135,7 +134,16 @@ fun LoginCard(
 				isLoading = false,
 				icon = painterResource(id = R.drawable.ic_google_logo),
 				onClick = {
-					authResultLauncher.launch(signInRequestCode)
+					googleAuthLauncher.launch(1)
+				}
+			)
+			SignInButton(
+				text = "Sign in with Facebook",
+				loadingText = "Signing in...",
+				isLoading = false,
+				icon = painterResource(id = R.drawable.ic_facebook_logo),
+				onClick = {
+					TODO()
 				}
 			)
 			Spacer(modifier = Modifier.height(16.dp))
