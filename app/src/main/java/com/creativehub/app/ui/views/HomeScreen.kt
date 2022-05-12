@@ -9,11 +9,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
-import com.creativehub.app.viewmodel.UserState
+import com.creativehub.app.viewmodel.LocalUserState
 
 @Composable
 fun HomeScreen(navController: NavHostController) {
-	val vm = UserState.current
+	val vm = LocalUserState.current
 	Column(Modifier.fillMaxSize(),
 		   verticalArrangement = Arrangement.Center,
 		   horizontalAlignment = Alignment.CenterHorizontally

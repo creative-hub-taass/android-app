@@ -43,6 +43,7 @@ android {
 			excludes += '/META-INF/{AL2.0,LGPL2.1}'
 		}
 	}
+	namespace "com.creativehub.app"
 }
 
 dependencies {
@@ -67,7 +68,8 @@ dependencies {
 	implementation "androidx.compose.foundation:foundation-layout:$compose_version"
 	implementation "androidx.compose.runtime:runtime-livedata:$compose_version"
 	implementation "androidx.compose.material:material-icons-extended:$compose_version"
-	implementation 'com.google.android.material:material:1.5.0'
+	implementation 'com.google.android.material:material:1.6.0'
+	implementation "com.google.android.gms:play-services-auth:20.2.0"
 	implementation "io.ktor:ktor-client-core:$ktor_version"
 	implementation "io.ktor:ktor-client-cio:$ktor_version"
 	implementation "io.ktor:ktor-client-auth:$ktor_version"

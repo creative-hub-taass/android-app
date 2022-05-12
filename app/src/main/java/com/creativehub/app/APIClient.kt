@@ -61,10 +61,10 @@ object APIClient {
 		}.body<User>()
 	}
 
-	suspend fun loginSocial(email: String, password: String, token: String) = runCatching {
+	suspend fun socialLogin(email: String, nickname: String, token: String) = runCatching {
 		client.post("$USERS_BASE_URL/-/auth/loginsocial") {
 			contentType(ContentType.Application.Json)
-			setBody(SocialLoginRequest(email, password, token))
+			setBody(SocialLoginRequest(email, nickname, token))
 		}.body<User>()
 	}
 

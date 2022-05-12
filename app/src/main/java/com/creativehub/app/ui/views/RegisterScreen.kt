@@ -25,7 +25,7 @@ import com.creativehub.app.Destination.Login
 import com.creativehub.app.R
 import com.creativehub.app.ui.theme.CreativeHubTheme
 import com.creativehub.app.ui.theme.Typography
-import com.creativehub.app.viewmodel.UserState
+import com.creativehub.app.viewmodel.LocalUserState
 import com.creativehub.app.viewmodel.UserStateViewModel
 
 @Composable
@@ -33,7 +33,7 @@ fun RegisterScreen(
 	navController: NavController,
 	onRegisterClick: (nickname: String, email: String, password: String) -> Unit,
 ) {
-	val vm = UserState.current
+	val vm = LocalUserState.current
 	ConstraintLayout(Modifier.fillMaxSize()) {
 		val (card, skipBtn, loader) = createRefs()
 		if (vm.isBusy) {
@@ -121,7 +121,7 @@ fun RegisterCard(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun RegisterPreview() {
-	CompositionLocalProvider(UserState provides UserStateViewModel()) {
+	CompositionLocalProvider(LocalUserState provides UserStateViewModel()) {
 		CreativeHubTheme {
 			val navController = rememberNavController()
 			Surface(

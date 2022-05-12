@@ -1,5 +1,7 @@
 package com.creativehub.app.ui.views
 
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -9,6 +11,8 @@ import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -23,17 +27,21 @@ import androidx.navigation.compose.rememberNavController
 import com.creativehub.app.Destination.Feed
 import com.creativehub.app.Destination.Register
 import com.creativehub.app.R
+import com.creativehub.app.ui.components.SignInButton
 import com.creativehub.app.ui.theme.CreativeHubTheme
 import com.creativehub.app.ui.theme.Typography
-import com.creativehub.app.viewmodel.UserState
+import com.creativehub.app.util.AuthResultContract
+import com.creativehub.app.viewmodel.LocalUserState
 import com.creativehub.app.viewmodel.UserStateViewModel
+import com.google.android.gms.common.api.ApiException
 
 @Composable
 fun LoginScreen(
 	navController: NavController,
 	onLoginClick: (email: String, password: String) -> Unit,
+	onSocialLoginClick: (email: String, nickname: String, token: String) -> Unit,
 ) {
-	val vm = UserState.current
+	val vm = LocalUserState.current
 	ConstraintLayout(Modifier.fillMaxSize()) {
 		val (loginCard, skipBtn, loader) = createRefs()
 		if (vm.isBusy) {
@@ -41,7 +49,8 @@ fun LoginScreen(
 		} else {
 			LoginCard(navController,
 					  Modifier.constrainAs(loginCard) { centerTo(parent) },
-					  onLoginClick)
+					  onLoginClick,
+					  onSocialLoginClick)
 		}
 		TextButton(onClick = { navController.navigate(Feed.route) },
 				   modifier = Modifier.constrainAs(skipBtn) {
@@ -60,10 +69,27 @@ fun LoginCard(
 	navController: NavController,
 	modifier: Modifier,
 	onLoginClick: (email: String, password: String) -> Unit,
+	onSocialLoginClick: (email: String, nickname: String, token: String) -> Unit,
 ) {
 	var email by remember { mutableStateOf("") }
 	var password by remember { mutableStateOf("") }
 	var passwordVisible by remember { mutableStateOf(false) }
+	val signInRequestCode = 1
+	val context = LocalContext.current
+	val authResultLauncher = rememberLauncherForActivityResult(AuthResultContract()) { task ->
+		try {
+			val account = task?.getResult(ApiException::class.java)
+			val mail = account?.email
+			val nickname = account?.displayName
+			val token = account?.idToken
+			if (mail != null && nickname != null) {
+				onSocialLoginClick(mail, nickname, token ?: "")
+			} else Toast.makeText(context, "Google sign in failed", Toast.LENGTH_SHORT).show()
+		} catch (e: ApiException) {
+			e.printStackTrace()
+			Toast.makeText(context, "Google sign in failed", Toast.LENGTH_SHORT).show()
+		}
+	}
 	Card(modifier) {
 		Column(
 			modifier = Modifier.padding(24.dp, 24.dp),
@@ -103,6 +129,16 @@ fun LoginCard(
 				Text(stringResource(R.string.login).uppercase(), style = Typography.button)
 			}
 			Spacer(modifier = Modifier.height(16.dp))
+			SignInButton(
+				text = "Sign in with Google",
+				loadingText = "Signing in...",
+				isLoading = false,
+				icon = painterResource(id = R.drawable.ic_google_logo),
+				onClick = {
+					authResultLauncher.launch(signInRequestCode)
+				}
+			)
+			Spacer(modifier = Modifier.height(16.dp))
 			TextButton(onClick = { navController.navigate(Register.route) }) {
 				Text(text = stringResource(R.string.not_registered_call))
 			}
@@ -113,14 +149,14 @@ fun LoginCard(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun LoginPreview() {
-	CompositionLocalProvider(UserState provides UserStateViewModel()) {
+	CompositionLocalProvider(LocalUserState provides UserStateViewModel()) {
 		CreativeHubTheme {
 			val navController = rememberNavController()
 			Surface(
 				modifier = Modifier.fillMaxSize(),
 				color = MaterialTheme.colors.background
 			) {
-				LoginScreen(navController) { _, _ -> }
+				LoginScreen(navController, { _, _ -> }, { _, _, _ -> })
 			}
 		}
 	}
