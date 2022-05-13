@@ -58,19 +58,19 @@ fun CreativeHubNavHost(navController: NavHostController, modifier: Modifier) {
 				FeedScreen(navController)
 			}
 			composable(Events.route) {
-				Text(text = Events.label)
+				EventsScreen(navController)
 			}
 			composable(Profile.route) {
-				Text(text = Profile.label)
+				ProfileScreen(navController)
 			}
-			composable(Artwork.route) {
-				Text(text = Artwork.label)
+			composable(Artwork.route, arguments = Artwork.arguments) {
+				Text(text = Artwork.label + (it.arguments?.getString("id") ?: "?"))
 			}
-			composable(Event.route) {
-				Text(text = Event.label)
+			composable(Event.route, arguments = Event.arguments) {
+				Text(text = Event.label + (it.arguments?.getString("id") ?: "?"))
 			}
-			composable(Post.route) {
-				Text(text = Post.label)
+			composable(Post.route, arguments = Post.arguments) {
+				Text(text = Post.label + (it.arguments?.getString("id") ?: "?"))
 			}
 		}
 		composable(Login.route) {

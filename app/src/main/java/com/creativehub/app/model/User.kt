@@ -11,8 +11,8 @@ interface IPublicUser {
 	val username: String
 	val nickname: String
 	val creator: IPublicCreator?
-	val inspirerIds: Set<String>
-	val fanIds: Set<String>
+	val inspirerIds: List<String>
+	val fanIds: List<String>
 }
 
 @Serializable
@@ -21,8 +21,8 @@ open class PublicUser(
 	override val username: String,
 	override val nickname: String,
 	override val creator: PublicCreator,
-	override val inspirerIds: Set<String>,
-	override val fanIds: Set<String>,
+	override val inspirerIds: List<String>,
+	override val fanIds: List<String>,
 ) : IPublicUser
 
 @Serializable
@@ -33,7 +33,7 @@ class User(
 	val email: String,
 	val role: Role,
 	override val creator: Creator?,
-	override val inspirerIds: Set<String>,
-	override val fanIds: Set<String>,
+	override val inspirerIds: List<String>,
+	override val fanIds: List<String>,
 ) : IPublicUser
 

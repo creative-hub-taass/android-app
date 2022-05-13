@@ -8,10 +8,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.creativehub.app.R
 import com.creativehub.app.ui.navigation.Destination
 import com.creativehub.app.viewmodel.LocalUserState
 
@@ -23,7 +24,14 @@ fun AppBar(navController: NavController) {
 	val context = LocalContext.current
 	if (currentScreen?.contains(Destination.Home.route) == true) {
 		TopAppBar(
-			title = { Text(stringResource(id = R.string.app_name)) },
+			title = {
+				Text(buildAnnotatedString {
+					pushStyle(SpanStyle(fontWeight = FontWeight.Normal))
+					append("creative")
+					pushStyle(SpanStyle(fontWeight = FontWeight.Black))
+					append("Hub")
+				})
+			},
 			actions = {
 				if (vm.isLoggedIn) {
 					IconButton(onClick = {
