@@ -1,7 +1,6 @@
 package com.creativehub.app.model
 
 import kotlinx.datetime.Instant
-import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -15,10 +14,10 @@ data class Event(
 	val image: String,
 	val locationName: String,
 	val coordinates: Coordinates,
-	val startDateTime: LocalDateTime,
-	val endDateTime: LocalDateTime,
-	val bookingURL: String,
-) : Publication<EventCreation> {
+	val startDateTime: Instant,
+	val endDateTime: Instant,
+	val bookingURL: String?,
+) : Publication() {
 	@Serializable
 	data class Coordinates(
 		val latitude: Double,

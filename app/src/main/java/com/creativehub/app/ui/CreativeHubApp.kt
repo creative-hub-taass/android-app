@@ -18,14 +18,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
-import com.creativehub.app.Destination
-import com.creativehub.app.Destination.*
 import com.creativehub.app.ui.components.AppBar
 import com.creativehub.app.ui.components.BottomBar
+import com.creativehub.app.ui.navigation.Destination
+import com.creativehub.app.ui.navigation.Destination.*
 import com.creativehub.app.ui.theme.CreativeHubTheme
-import com.creativehub.app.ui.views.HomeScreen
-import com.creativehub.app.ui.views.LoginScreen
-import com.creativehub.app.ui.views.RegisterScreen
+import com.creativehub.app.ui.views.*
 import com.creativehub.app.viewmodel.LocalUserState
 import com.creativehub.app.viewmodel.UserStateViewModel
 import kotlinx.coroutines.launch
@@ -57,7 +55,7 @@ fun CreativeHubNavHost(navController: NavHostController, modifier: Modifier) {
 	) {
 		navigation(startDestination = Feed.route, route = Home.route) {
 			composable(Feed.route) {
-				HomeScreen(navController)
+				FeedScreen(navController)
 			}
 			composable(Events.route) {
 				Text(text = Events.label)

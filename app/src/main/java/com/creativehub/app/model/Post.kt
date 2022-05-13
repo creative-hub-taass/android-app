@@ -11,5 +11,5 @@ data class Post(
 	override val creations: List<PostCreation>,
 	val title: String,
 	val body: String,
-) : Publication<PostCreation>
+) : Publication()
 

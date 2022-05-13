@@ -6,15 +6,21 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.runtime.CompositionLocalProvider
 import com.creativehub.app.ui.CreativeHubApp
+import com.creativehub.app.viewmodel.FeedStateViewModel
+import com.creativehub.app.viewmodel.LocalFeedState
 import com.creativehub.app.viewmodel.LocalUserState
 import com.creativehub.app.viewmodel.UserStateViewModel
 
 class MainActivity : ComponentActivity() {
 	private val userState by viewModels<UserStateViewModel>()
+	private val feedState by viewModels<FeedStateViewModel>()
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		setContent {
-			CompositionLocalProvider(LocalUserState provides userState) {
+			CompositionLocalProvider(
+				LocalUserState provides userState,
+				LocalFeedState provides feedState
+			) {
 				CreativeHubApp()
 			}
 		}

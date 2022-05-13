@@ -5,15 +5,16 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
-import com.creativehub.app.APIClient
+import com.creativehub.app.api.APIClient
+import com.creativehub.app.api.login
+import com.creativehub.app.api.register
+import com.creativehub.app.api.socialLogin
 import com.creativehub.app.model.User
 import com.creativehub.app.util.getGoogleSignInClient
 import io.ktor.client.plugins.*
 import io.ktor.client.statement.*
 
-class UserStateViewModel : ViewModel() {
-	var isBusy by mutableStateOf(false)
+class UserStateViewModel : BusyViewModel() {
 	var user by mutableStateOf<User?>(null)
 
 	suspend fun login(email: String, password: String): String? = runBusy {
@@ -55,14 +56,6 @@ class UserStateViewModel : ViewModel() {
 	}
 
 	val isLoggedIn get() = user != null
-
-	private inline fun <T> runBusy(block: () -> T): T {
-		isBusy = true
-		val result = block()
-		isBusy = false
-		return result
-	}
 }
 
-val LocalUserState =
-	compositionLocalOf<UserStateViewModel> { error("User State Context Not Found!") }
+val LocalUserState = compositionLocalOf<UserStateViewModel> { error("User State Not Found!") }

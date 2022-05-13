@@ -1,7 +1,6 @@
 package com.creativehub.app.model
 
 import kotlinx.datetime.Instant
-import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.PrimitiveKind
@@ -17,7 +16,7 @@ data class Artwork(
 	override val timestamp: Instant,
 	override val lastUpdate: Instant,
 	override val creations: List<ArtworkCreation>,
-	val creationDateTime: LocalDateTime,
+	val creationDateTime: Instant,
 	val name: String,
 	val description: String,
 	val type: String,
@@ -25,12 +24,12 @@ data class Artwork(
 	val attributes: Map<String, String>,
 	val images: Set<String>,
 	val onSale: Boolean,
-	val price: Double,
+	val price: Double?,
 	@Serializable(with = CurrencySerializer::class)
-	val currency: Currency,
-	val paymentEmail: String,
+	val currency: Currency?,
+	val paymentEmail: String?,
 	val availableCopies: Int,
-) : Publication<ArtworkCreation>
+) : Publication()
 
 
 object CurrencySerializer : KSerializer<Currency> {

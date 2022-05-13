@@ -7,7 +7,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.creativehub.app.Destination.*
+import com.creativehub.app.ui.navigation.Destination.*
 
 @Composable
 fun BottomBar(navController: NavController) {

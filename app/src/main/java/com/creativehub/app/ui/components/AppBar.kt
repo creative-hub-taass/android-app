@@ -11,8 +11,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.creativehub.app.Destination
 import com.creativehub.app.R
+import com.creativehub.app.ui.navigation.Destination
 import com.creativehub.app.viewmodel.LocalUserState
 
 @Composable

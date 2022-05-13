@@ -1,4 +1,4 @@
-package com.creativehub.app
+package com.creativehub.app.ui.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
