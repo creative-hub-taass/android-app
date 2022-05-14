@@ -41,7 +41,7 @@ fun getPreviewArtwork(): PublicationInfo<Artwork> {
 		Comment(UUID.randomUUID().toString(), UUID.randomUUID().toString(), id, "Test unicode \uD83D\uDC4D")
 	)
 	val commentsCount = comments.size
-	return FullPublicationInfo(artwork, creators, likes, comments, commentsCount)
+	return PublicationInfo(artwork, creators, likes, false, comments, commentsCount)
 }
 
 fun getPreviewCreator() = PublicUser(

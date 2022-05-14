@@ -1,11 +1,31 @@
 package com.creativehub.app.api
 
 import com.creativehub.app.model.Comment
+import com.creativehub.app.model.Like
 import io.ktor.client.call.*
 import io.ktor.client.request.*
+import io.ktor.http.*
 
 suspend fun APIClient.getLikes(publicationId: String) = runCatching {
 	APIClient().get("$INTERACTIONS_BASE_URL/-/likes/count/$publicationId").body<Int>()
+}
+
+suspend fun APIClient.setLike(like: Like) = runCatching {
+	APIClient().post("$INTERACTIONS_BASE_URL/like") {
+		contentType(ContentType.Application.Json)
+		setBody(like)
+	}
+}
+
+suspend fun APIClient.removeLike(like: Like): Result<Any> = runCatching {
+	APIClient().delete("$INTERACTIONS_BASE_URL/like") {
+		contentType(ContentType.Application.Json)
+		setBody(like)
+	}
+}
+
+suspend fun APIClient.getUserLikedPublication(publicationId: String, userId: String) = runCatching {
+	APIClient().get("$INTERACTIONS_BASE_URL/userliked/$userId/$publicationId").body<Boolean>()
 }
 
 suspend fun APIClient.getComments(publicationId: String) = runCatching {

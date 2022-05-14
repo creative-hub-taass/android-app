@@ -1,12 +1,15 @@
 package com.creativehub.app.api
 
 import com.creativehub.app.BuildConfig
+import com.creativehub.app.api.util.bearerToken
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.auth.*
 import io.ktor.client.plugins.auth.providers.*
 import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.plugins.logging.*
 import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
 
@@ -24,34 +27,43 @@ object APIClient {
 				ignoreUnknownKeys = true
 			})
 		}
+		if (BuildConfig.DEBUG) {
+			Logging {
+				logger = Logger.DEFAULT
+				level = LogLevel.HEADERS
+			}
+		}
 		Auth {
-			bearer {
-				loadTokens {
+			bearerToken {
+				onLoadTokens {
 					bearerTokenStorage.lastOrNull()
 				}
-				refreshTokens {
+				onRefreshTokens {
+					val refreshToken = oldTokens?.refreshToken ?: return@onRefreshTokens null
 					val response = client.post("$USERS_BASE_URL/-/auth/refresh") {
 						markAsRefreshTokenRequest()
-						setBody(oldTokens?.refreshToken)
+						setBody(refreshToken)
 					}
-					val access = response.headers["X-ACCESS-TOKEN"]
-					val refresh = response.headers["X-REFRESH-TOKEN"]
-					val tokens = if (!access.isNullOrEmpty() && !refresh.isNullOrBlank()) {
-						BearerTokens(access, refresh)
-					} else null
-					tokens?.let { bearerTokenStorage.add(it) }
-					tokens
+					extractTokens(response)
 				}
-				sendWithoutRequest { request ->
-					request.url.buildString().contains("/-/")
-				}
+				sendDirectlyIf { true }
 			}
 		}
 	}
 
-	operator fun invoke() = client
+	fun extractTokens(response: HttpResponse): BearerTokens? {
+		val access = response.headers["X-ACCESS-TOKEN"]
+		val refresh = response.headers["X-REFRESH-TOKEN"]
+		val tokens = if (!access.isNullOrEmpty() && !refresh.isNullOrBlank()) {
+			BearerTokens(access, refresh)
+		} else null
+		tokens?.let { bearerTokenStorage.add(it) }
+		return tokens
+	}
 
 	fun logout() {
 		bearerTokenStorage.clear()
 	}
+
+	operator fun invoke() = client
 }

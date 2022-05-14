@@ -8,11 +8,10 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavHostController
 import com.creativehub.app.viewmodel.LocalUserState
 
 @Composable
-fun ProfileScreen(navController: NavHostController) {
+fun ProfileScreen() {
 	val vm = LocalUserState.current
 	Column(Modifier.fillMaxSize(),
 		   verticalArrangement = Arrangement.Center,

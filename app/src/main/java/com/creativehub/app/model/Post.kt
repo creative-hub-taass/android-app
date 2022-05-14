@@ -1,5 +1,6 @@
 package com.creativehub.app.model
 
+import com.creativehub.app.BuildConfig
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 
@@ -11,5 +12,6 @@ data class Post(
 	override val creations: List<PostCreation>,
 	val title: String,
 	val body: String,
-) : Publication()
-
+) : Publication() {
+	override val url: String get() = "${BuildConfig.CLIENT_URL}/post/$id"
+}

@@ -11,17 +11,18 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.creativehub.app.ui.LocalNavigationState
 import com.creativehub.app.ui.navigation.Destination
 import com.creativehub.app.viewmodel.LocalUserState
 
 @Composable
-fun AppBar(navController: NavController) {
-	val backstackEntry = navController.currentBackStackEntryAsState()
-	val currentScreen = backstackEntry.value?.destination?.route
+fun AppBar() {
 	val vm = LocalUserState.current
 	val context = LocalContext.current
+	val navigation = LocalNavigationState.current
+	val backstackEntry = navigation.currentBackStackEntryAsState()
+	val currentScreen = backstackEntry.value?.destination?.route
 	if (currentScreen?.contains(Destination.Home.route) == true) {
 		TopAppBar(
 			title = {
@@ -36,13 +37,13 @@ fun AppBar(navController: NavController) {
 				if (vm.isLoggedIn) {
 					IconButton(onClick = {
 						vm.logout(context)
-						navController.navigate(Destination.Login.route)
+						navigation.navigate(Destination.Login.route)
 					}) {
 						Icon(Icons.Filled.Logout, "Logout")
 					}
 				} else {
 					IconButton(onClick = {
-						navController.navigate(Destination.Login.route)
+						navigation.navigate(Destination.Login.route)
 					}) {
 						Text("Login")
 					}

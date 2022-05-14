@@ -5,7 +5,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.navigation.compose.rememberNavController
 import com.creativehub.app.ui.CreativeHubApp
+import com.creativehub.app.ui.LocalNavigationState
 import com.creativehub.app.viewmodel.FeedStateViewModel
 import com.creativehub.app.viewmodel.LocalFeedState
 import com.creativehub.app.viewmodel.LocalUserState
@@ -19,7 +21,8 @@ class MainActivity : ComponentActivity() {
 		setContent {
 			CompositionLocalProvider(
 				LocalUserState provides userState,
-				LocalFeedState provides feedState
+				LocalFeedState provides feedState,
+				LocalNavigationState provides rememberNavController()
 			) {
 				CreativeHubApp()
 			}

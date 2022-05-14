@@ -10,17 +10,21 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 
 suspend fun APIClient.login(email: String, password: String) = runCatching {
-	APIClient().post("$USERS_BASE_URL/-/auth/login") {
+	val response = APIClient().post("$USERS_BASE_URL/-/auth/login") {
 		contentType(ContentType.Application.Json)
 		setBody(LoginRequest(email, password))
-	}.body<User>()
+	}
+	extractTokens(response)
+	response.body<User>()
 }
 
 suspend fun APIClient.socialLogin(email: String, nickname: String, token: String) = runCatching {
-	APIClient().post("$USERS_BASE_URL/-/auth/loginsocial") {
+	val response = APIClient().post("$USERS_BASE_URL/-/auth/loginsocial") {
 		contentType(ContentType.Application.Json)
 		setBody(SocialLoginRequest(email, nickname, token))
-	}.body<User>()
+	}
+	extractTokens(response)
+	response.body<User>()
 }
 
 suspend fun APIClient.register(nickname: String, email: String, password: String) = runCatching {

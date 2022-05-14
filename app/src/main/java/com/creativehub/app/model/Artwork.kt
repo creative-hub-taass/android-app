@@ -1,5 +1,6 @@
 package com.creativehub.app.model
 
+import com.creativehub.app.BuildConfig
 import com.creativehub.app.model.serializers.CurrencySerializer
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
@@ -24,4 +25,6 @@ data class Artwork(
 	val currency: Currency?,
 	val paymentEmail: String?,
 	val availableCopies: Int,
-) : Publication()
+) : Publication() {
+	override val url: String get() = "${BuildConfig.CLIENT_URL}/artwork/$id"
+}

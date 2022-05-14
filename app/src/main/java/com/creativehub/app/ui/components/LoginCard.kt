@@ -22,8 +22,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.creativehub.app.R
+import com.creativehub.app.ui.LocalNavigationState
 import com.creativehub.app.ui.navigation.Destination
 import com.creativehub.app.ui.theme.Typography
 import com.creativehub.app.util.GoogleAuthResultContract
@@ -31,7 +31,6 @@ import com.google.android.gms.common.api.ApiException
 
 @Composable
 fun LoginCard(
-	navController: NavController,
 	modifier: Modifier,
 	onLoginClick: (email: String, password: String) -> Unit,
 	onSocialLoginClick: (email: String, nickname: String, token: String) -> Unit,
@@ -40,6 +39,7 @@ fun LoginCard(
 	var password by remember { mutableStateOf("") }
 	var passwordVisible by remember { mutableStateOf(false) }
 	val context = LocalContext.current
+	val navigation = LocalNavigationState.current
 	val googleAuthLauncher = rememberLauncherForActivityResult(GoogleAuthResultContract()) { task ->
 		try {
 			val account = task?.getResult(ApiException::class.java)
@@ -113,7 +113,7 @@ fun LoginCard(
 				}
 			)
 			Spacer(modifier = Modifier.height(16.dp))
-			TextButton(onClick = { navController.navigate(Destination.Register.route) }) {
+			TextButton(onClick = { navigation.navigate(Destination.Register.route) }) {
 				Text(text = stringResource(R.string.not_registered_call))
 			}
 		}

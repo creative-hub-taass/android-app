@@ -1,5 +1,6 @@
 package com.creativehub.app.model
 
+import com.creativehub.app.BuildConfig
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 
@@ -18,6 +19,8 @@ data class Event(
 	val endDateTime: Instant,
 	val bookingURL: String?,
 ) : Publication() {
+	override val url: String get() = "${BuildConfig.CLIENT_URL}/event/$id"
+
 	@Serializable
 	data class Coordinates(
 		val latitude: Double,

@@ -17,9 +17,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.creativehub.app.R
+import com.creativehub.app.ui.LocalNavigationState
 import com.creativehub.app.ui.navigation.Destination.Feed
 import com.creativehub.app.ui.navigation.Destination.Login
 import com.creativehub.app.ui.theme.CreativeHubTheme
@@ -29,20 +28,19 @@ import com.creativehub.app.viewmodel.UserStateViewModel
 
 @Composable
 fun RegisterScreen(
-	navController: NavController,
 	onRegisterClick: (nickname: String, email: String, password: String) -> Unit,
 ) {
 	val vm = LocalUserState.current
+	val navigation = LocalNavigationState.current
 	ConstraintLayout(Modifier.fillMaxSize()) {
 		val (card, skipBtn, loader) = createRefs()
 		if (vm.isBusy) {
 			CircularProgressIndicator(modifier = Modifier.constrainAs(loader) { centerTo(parent) })
 		} else {
-			RegisterCard(navController,
-						 Modifier.constrainAs(card) { centerTo(parent) },
+			RegisterCard(Modifier.constrainAs(card) { centerTo(parent) },
 						 onRegisterClick)
 		}
-		TextButton(onClick = { navController.navigate(Feed.route) },
+		TextButton(onClick = { navigation.navigate(Feed.route) },
 				   modifier = Modifier.constrainAs(skipBtn) {
 					   bottom.linkTo(parent.bottom, margin = 16.dp)
 					   centerHorizontallyTo(parent)
@@ -54,7 +52,6 @@ fun RegisterScreen(
 
 @Composable
 fun RegisterCard(
-	navController: NavController,
 	modifier: Modifier,
 	onRegisterClick: (nickname: String, email: String, password: String) -> Unit,
 ) {
@@ -62,6 +59,7 @@ fun RegisterCard(
 	var email by remember { mutableStateOf("") }
 	var password by remember { mutableStateOf("") }
 	var passwordVisible by remember { mutableStateOf(false) }
+	val navigation = LocalNavigationState.current
 	Card(modifier) {
 		Column(
 			modifier = Modifier.padding(24.dp, 24.dp),
@@ -108,7 +106,7 @@ fun RegisterCard(
 				Text(stringResource(R.string.sign_up).uppercase(), style = Typography.button)
 			}
 			Spacer(modifier = Modifier.height(16.dp))
-			TextButton(onClick = { navController.navigate(Login.route) }) {
+			TextButton(onClick = { navigation.navigate(Login.route) }) {
 				Text(text = stringResource(R.string.already_registered_call))
 			}
 		}
@@ -120,12 +118,11 @@ fun RegisterCard(
 fun RegisterPreview() {
 	CompositionLocalProvider(LocalUserState provides UserStateViewModel()) {
 		CreativeHubTheme {
-			val navController = rememberNavController()
 			Surface(
 				modifier = Modifier.fillMaxSize(),
 				color = MaterialTheme.colors.background
 			) {
-				RegisterScreen(navController) { _, _, _ -> }
+				RegisterScreen { _, _, _ -> }
 			}
 		}
 	}

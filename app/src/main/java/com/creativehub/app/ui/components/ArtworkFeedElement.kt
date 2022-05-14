@@ -15,18 +15,18 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.creativehub.app.R
 import com.creativehub.app.model.Artwork
 import com.creativehub.app.model.PublicationInfo
+import com.creativehub.app.ui.LocalNavigationState
 import com.creativehub.app.ui.navigation.Destination
 import com.creativehub.app.ui.theme.Typography
 import com.creativehub.app.util.getPreviewArtwork
 import com.creativehub.app.viewmodel.FeedStateViewModel
 import com.creativehub.app.viewmodel.LocalFeedState
+import com.creativehub.app.viewmodel.LocalUserState
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.material.shimmer
@@ -35,35 +35,29 @@ import kotlinx.datetime.toLocalDateTime
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun ArtworkFeedElement(info: PublicationInfo<Artwork>, navController: NavController) {
+fun ArtworkFeedElement(info: PublicationInfo<Artwork>) {
 	val indication = LocalIndication.current
 	val context = LocalContext.current
 	val feed = LocalFeedState.current
+	val user = LocalUserState.current
+	val navigation = LocalNavigationState.current
 	val artwork = info.publication
 	if (!info.loaded) {
 		LaunchedEffect(Unit) {
-			val index = feed.feed.indexOf(info)
-			feed.feed[index] = feed.fetchPublicationInfo(info, false)
+			feed.fetchPublicationInfo(info, user.user?.id)
 		}
 	}
 	Box(modifier = Modifier
 		.fillMaxWidth()
 		.padding(2.dp, 4.dp)) {
 		Card(
-			onClick = { navController.navigate(Destination.Artwork.argRoute(artwork.id)) },
+			onClick = { navigation.navigate(Destination.Artwork.argRoute(artwork.id)) },
 			modifier = Modifier.fillMaxWidth(),
 			elevation = 4.dp,
 			indication = indication
 		) {
 			val date = artwork.creationDateTime.toLocalDateTime(TimeZone.currentSystemDefault()).year
 			val creators = info.creators?.joinToString { it.first.nickname } ?: ""
-//			val price = when {
-//				artwork.price != null && artwork.currency != null -> when {
-//					artwork.availableCopies > 0 -> "${artwork.currency.symbol} ${"%,.2f".format(artwork.price)}"
-//					else -> "Sold"
-//				}
-//				else -> "Not for sale"
-//			}
 			Column {
 				AsyncImage(
 					model = ImageRequest.Builder(context)
@@ -86,7 +80,7 @@ fun ArtworkFeedElement(info: PublicationInfo<Artwork>, navController: NavControl
 						text = creators,
 						modifier = Modifier
 							.fillMaxWidth()
-							.placeholder(info.loading, highlight = PlaceholderHighlight.shimmer()),
+							.placeholder(info.creators == null, highlight = PlaceholderHighlight.shimmer()),
 						style = Typography.body1,
 						fontWeight = FontWeight.Bold
 					)
@@ -100,6 +94,6 @@ fun ArtworkFeedElement(info: PublicationInfo<Artwork>, navController: NavControl
 @Composable
 fun ArtworkFeedElementPreview() {
 	CompositionLocalProvider(LocalFeedState provides FeedStateViewModel()) {
-		ArtworkFeedElement(getPreviewArtwork(), rememberNavController())
+		ArtworkFeedElement(getPreviewArtwork())
 	}
 }

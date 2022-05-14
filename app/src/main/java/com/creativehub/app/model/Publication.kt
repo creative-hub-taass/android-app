@@ -10,4 +10,5 @@ sealed class Publication {
 	abstract val timestamp: Instant
 	abstract val lastUpdate: Instant
 	abstract val creations: List<Creation>
+	abstract val url: String
 }

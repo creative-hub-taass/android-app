@@ -13,8 +13,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.creativehub.app.ui.components.FeedElement
 import com.creativehub.app.viewmodel.LocalFeedState
 import com.creativehub.app.viewmodel.LocalUserState
@@ -23,7 +21,7 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import kotlinx.coroutines.launch
 
 @Composable
-fun FeedScreen(navController: NavController) {
+fun FeedScreen() {
 	val auth = LocalUserState.current
 	val feed = LocalFeedState.current
 	val coroutineScope = rememberCoroutineScope()
@@ -33,14 +31,14 @@ fun FeedScreen(navController: NavController) {
 	) {
 		if (feed.feed.isEmpty()) {
 			LaunchedEffect(auth.isLoggedIn) {
-				feed.fetchFeed(auth.user, 10)
+				feed.fetchFeed(auth.user)
 			}
 		}
 		SwipeRefresh(
 			state = rememberSwipeRefreshState(auth.isBusy || feed.isBusy),
 			onRefresh = {
 				coroutineScope.launch {
-					feed.fetchFeed(auth.user, 10)
+					feed.fetchFeed(auth.user)
 				}
 			}
 		) {
@@ -49,7 +47,7 @@ fun FeedScreen(navController: NavController) {
 				contentPadding = PaddingValues(2.dp)
 			) {
 				items(feed.feed, { it.publication.id }) {
-					FeedElement(it, navController)
+					FeedElement(it)
 				}
 			}
 		}
@@ -59,5 +57,5 @@ fun FeedScreen(navController: NavController) {
 @Preview
 @Composable
 fun FeedPreview() {
-	FeedScreen(rememberNavController())
+	FeedScreen()
 }
