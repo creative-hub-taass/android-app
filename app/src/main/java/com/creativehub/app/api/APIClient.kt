@@ -4,6 +4,7 @@ import com.creativehub.app.BuildConfig
 import com.creativehub.app.api.util.bearerToken
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
+import io.ktor.client.plugins.*
 import io.ktor.client.plugins.auth.*
 import io.ktor.client.plugins.auth.providers.*
 import io.ktor.client.plugins.contentnegotiation.*
@@ -22,6 +23,7 @@ object APIClient {
 	private val bearerTokenStorage = mutableListOf<BearerTokens>()
 	private val client = HttpClient(CIO) {
 		expectSuccess = true
+		install(HttpTimeout)
 		install(ContentNegotiation) {
 			json(Json {
 				ignoreUnknownKeys = true

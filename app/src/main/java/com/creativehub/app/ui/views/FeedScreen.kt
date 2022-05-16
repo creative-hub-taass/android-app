@@ -19,7 +19,7 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
 @Composable
 fun FeedScreen() {
-	val lazyFeed = LocalFeedState.current.publicFeed.collectAsLazyPagingItems()
+	val lazyFeed = LocalFeedState.current.feed.collectAsLazyPagingItems()
 	Column(Modifier.fillMaxSize(),
 		   verticalArrangement = Arrangement.Center,
 		   horizontalAlignment = Alignment.CenterHorizontally

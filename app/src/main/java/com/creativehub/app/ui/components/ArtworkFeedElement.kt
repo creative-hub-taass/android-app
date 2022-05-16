@@ -25,9 +25,6 @@ import com.creativehub.app.ui.theme.Typography
 import com.creativehub.app.util.getPreviewArtwork
 import com.creativehub.app.viewmodel.FeedStateViewModel
 import com.creativehub.app.viewmodel.LocalFeedState
-import com.google.accompanist.placeholder.PlaceholderHighlight
-import com.google.accompanist.placeholder.material.placeholder
-import com.google.accompanist.placeholder.material.shimmer
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
@@ -48,7 +45,7 @@ fun ArtworkFeedElement(info: PublicationInfo<Artwork>) {
 			indication = indication
 		) {
 			val date = artwork.creationDateTime.toLocalDateTime(TimeZone.currentSystemDefault()).year
-			val creators = info.creators?.joinToString { it.first.nickname } ?: ""
+			val creators = info.creators?.joinToString { it.nickname } ?: ""
 			Column {
 				AsyncImage(
 					model = ImageRequest.Builder(context)
@@ -69,9 +66,7 @@ fun ArtworkFeedElement(info: PublicationInfo<Artwork>) {
 					Spacer(modifier = Modifier.height(4.dp))
 					Text(
 						text = creators,
-						modifier = Modifier
-							.fillMaxWidth()
-							.placeholder(info.creators == null, highlight = PlaceholderHighlight.shimmer()),
+						modifier = Modifier.fillMaxWidth(),
 						style = Typography.body1,
 						fontWeight = FontWeight.Bold
 					)

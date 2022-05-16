@@ -7,13 +7,14 @@ import java.util.*
 
 fun getPreviewArtwork(): PublicationInfo<Artwork> {
 	val id = UUID.randomUUID().toString()
+	val user = getPreviewCreator()
 	val artwork = Artwork(
 		id = id,
 		timestamp = Clock.System.now(),
 		lastUpdate = Clock.System.now(),
 		creations = listOf(ArtworkCreation(
 			id = UUID.randomUUID().toString(),
-			user = UUID.randomUUID().toString(),
+			user = user.id,
 			creationType = CreationType.AUTHOR,
 			artworkId = id
 		)),
@@ -32,8 +33,7 @@ fun getPreviewArtwork(): PublicationInfo<Artwork> {
 		paymentEmail = "pay@creativehub.com",
 		availableCopies = 1
 	)
-	val user = getPreviewCreator()
-	val creators = listOf(Pair(user, CreationType.AUTHOR))
+	val creators = listOf(user)
 	val likes = 15
 	val comments = listOf(
 		Comment(UUID.randomUUID().toString(), UUID.randomUUID().toString(), id, "Test comment"),
