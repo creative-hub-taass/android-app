@@ -9,6 +9,7 @@ import com.creativehub.app.api.register
 import com.creativehub.app.api.socialLogin
 import com.creativehub.app.model.User
 import com.creativehub.app.util.getGoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import io.ktor.client.plugins.*
 import io.ktor.client.statement.*
 import kotlinx.coroutines.flow.launchIn
@@ -44,6 +45,28 @@ class UserStateViewModel : BusyViewModel() {
 			is ServerResponseException -> "Server error"
 			null -> null
 			else -> exception.message
+		}
+	}
+
+	suspend fun socialLoginGoogle(account: GoogleSignInAccount?): String? {
+		val mail = account?.email
+		val nickname = account?.displayName
+		val token = account?.idToken
+		return if (mail != null && nickname != null) {
+			socialLogin(mail, nickname, token ?: "")
+		} else null
+	}
+
+	suspend fun tryGoogleAutoSignIn(context: Context) {
+		val task = getGoogleSignInClient(context).silentSignIn()
+		if (task.isSuccessful) {
+			socialLoginGoogle(task.result)
+		} else {
+			task.addOnSuccessListener {
+				viewModelScope.launch {
+					socialLoginGoogle(it)
+				}
+			}
 		}
 	}
 

@@ -13,7 +13,9 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.autofill.AutofillType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -29,6 +31,7 @@ import com.creativehub.app.ui.theme.Typography
 import com.creativehub.app.util.GoogleAuthResultContract
 import com.google.android.gms.common.api.ApiException
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun LoginCard(
 	modifier: Modifier,
@@ -63,19 +66,29 @@ fun LoginCard(
 			Spacer(modifier = Modifier.height(16.dp))
 			OutlinedTextField(
 				value = email,
-				onValueChange = { email = it },
+				onValueChange = {
+					email = it
+				},
 				label = { Text(stringResource(R.string.email)) },
 				singleLine = true,
-				keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
+				keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+				modifier = Modifier.autofill(listOf(AutofillType.EmailAddress), onFill = {
+					email = it
+				})
 			)
 			Spacer(modifier = Modifier.height(16.dp))
 			OutlinedTextField(
 				value = password,
-				onValueChange = { password = it },
+				onValueChange = {
+					password = it
+				},
 				label = { Text(stringResource(R.string.password)) },
 				singleLine = true,
 				visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
 				keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+				modifier = Modifier.autofill(listOf(AutofillType.Password), onFill = {
+					password = it
+				}),
 				trailingIcon = {
 					val image =
 						if (passwordVisible) Icons.Filled.Visibility

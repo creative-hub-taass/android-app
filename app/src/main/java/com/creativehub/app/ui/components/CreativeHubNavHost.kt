@@ -23,6 +23,9 @@ fun CreativeHubNavHost(modifier: Modifier) {
 	val navigation = LocalNavigationState.current
 	val startDestination = Destination.getStartDestination()
 	val coroutineScope = rememberCoroutineScope()
+	LaunchedEffect(Unit) {
+		vm.tryGoogleAutoSignIn(context)
+	}
 	NavHost(
 		navController = navigation,
 		startDestination = startDestination,

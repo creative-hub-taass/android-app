@@ -4,29 +4,17 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
-import androidx.paging.PagingSource
 import androidx.paging.cachedIn
 import com.creativehub.app.api.*
 import com.creativehub.app.model.Comment
 import com.creativehub.app.model.Like
 import com.creativehub.app.model.PublicationInfo
 import com.creativehub.app.model.User
-
-class InvalidatingPagingSourceFactory<K : Any, V : Any, PS : PagingSource<K, V>>(val factory: () -> PS) : () -> PS {
-	private val list = mutableListOf<PagingSource<K, V>>()
-
-	override fun invoke(): PS = factory().also { list.add(it) }
-
-	fun invalidate() {
-		while (list.isNotEmpty()) {
-			list.removeFirst().invalidate()
-		}
-	}
-}
+import com.creativehub.app.util.InvalidatingPagingSourceFactory
 
 class FeedStateViewModel : BusyViewModel() {
 	private var user: User? = null
-	private val config = PagingConfig(pageSize = 20, initialLoadSize = 20)
+	private val config = PagingConfig(pageSize = 10, initialLoadSize = 10)
 	private val pagingSourceFactory = InvalidatingPagingSourceFactory { FeedSource(user?.id) }
 	val publicFeed = Pager(config, 0, pagingSourceFactory).flow.cachedIn(viewModelScope)
 
