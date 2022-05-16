@@ -1,89 +1,50 @@
 package com.creativehub.app.viewmodel
 
 import androidx.compose.runtime.compositionLocalOf
-import androidx.compose.runtime.mutableStateListOf
+import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingSource
+import androidx.paging.cachedIn
 import com.creativehub.app.api.*
+import com.creativehub.app.model.Comment
 import com.creativehub.app.model.Like
 import com.creativehub.app.model.PublicationInfo
 import com.creativehub.app.model.User
 
+class InvalidatingPagingSourceFactory<K : Any, V : Any, PS : PagingSource<K, V>>(val factory: () -> PS) : () -> PS {
+	private val list = mutableListOf<PagingSource<K, V>>()
+
+	override fun invoke(): PS = factory().also { list.add(it) }
+
+	fun invalidate() {
+		while (list.isNotEmpty()) {
+			list.removeFirst().invalidate()
+		}
+	}
+}
+
 class FeedStateViewModel : BusyViewModel() {
-	var feed = mutableStateListOf<PublicationInfo<*>>()
+	private var user: User? = null
+	private val config = PagingConfig(pageSize = 20, initialLoadSize = 20)
+	private val pagingSourceFactory = InvalidatingPagingSourceFactory { FeedSource(user?.id) }
+	val publicFeed = Pager(config, 0, pagingSourceFactory).flow.cachedIn(viewModelScope)
 
-	suspend fun fetchFeed(user: User? = null) = runBusy {
-		val limit = null
-		feed.clear()
-		if (user != null) {
-			val userFeed = APIClient.getUserFeed(user.id, limit)
-			userFeed.getOrDefault(listOf())
+	fun updateFeed(user: User?) {
+		this.user = user
+		pagingSourceFactory.invalidate()
+	}
+
+	suspend fun fetchComments(info: PublicationInfo<*>): List<Comment>? {
+		return APIClient.getComments(info.publication.id).getOrNull()
+	}
+
+	suspend fun toggleLike(info: PublicationInfo<*>, userId: String) {
+		if (info.userLiked == true) {
+			APIClient.removeLike(Like(info.publication.id, userId)).isSuccess
 		} else {
-			APIClient.getPublicFeed(limit).getOrDefault(listOf())
-		}.map {
-			PublicationInfo(it)
-		}.forEach {
-			feed.add(0, it)
+			APIClient.setLike(Like(userId, info.publication.id)).isSuccess
 		}
-	}
-
-	suspend fun fetchPublicationInfo(info: PublicationInfo<*>, userId: String?) {
-		info.fetchCreators()
-			.fetchUserLikedPublication(userId)
-			.fetchLikes()
-			.fetchCommentsCount()
-	}
-
-	suspend fun fetchFullPublicationInfo(info: PublicationInfo<*>, userId: String?) {
-		info.fetchCreators()
-			.fetchUserLikedPublication(userId)
-			.fetchLikes()
-			.fetchComments()
-	}
-
-	suspend fun togglePublicationLike(info: PublicationInfo<*>, userId: String) {
-		info.toggleLike(userId)
-			.fetchUserLikedPublication(userId)
-			.fetchLikes()
-	}
-
-	private suspend fun PublicationInfo<*>.fetchUserLikedPublication(userId: String?): PublicationInfo<*> = update {
-		PublicationInfo(it, userLiked = userId?.let { id ->
-			APIClient.getUserLikedPublication(it.publication.id, id).getOrNull()
-		})
-	}
-
-	private suspend fun PublicationInfo<*>.fetchCreators(): PublicationInfo<*> = update {
-		PublicationInfo(it, creators = APIClient.getCreators(it.publication.creations).getOrNull())
-	}
-
-	private suspend fun PublicationInfo<*>.fetchLikes(): PublicationInfo<*> = update {
-		PublicationInfo(it, likes = APIClient.getLikes(it.publication.id).getOrNull())
-	}
-
-	private suspend fun PublicationInfo<*>.fetchComments(): PublicationInfo<*> = update {
-		val comments = APIClient.getComments(it.publication.id).getOrNull()
-		PublicationInfo(it, comments = comments, commentsCount = comments?.size)
-	}
-
-	private suspend fun PublicationInfo<*>.fetchCommentsCount(): PublicationInfo<*> = update {
-		PublicationInfo(it, likes = APIClient.getLikes(it.publication.id).getOrNull())
-	}
-
-	private suspend fun PublicationInfo<*>.toggleLike(userId: String): PublicationInfo<*> = update {
-		val success = if (it.userLiked == true) {
-			APIClient.removeLike(Like(it.publication.id, userId)).isSuccess
-		} else {
-			APIClient.setLike(Like(userId, it.publication.id)).isSuccess
-		}
-		if (success) PublicationInfo(it, userLiked = it.userLiked?.not(), likes = it.likes?.plus(1)) else it
-	}
-
-	private inline fun PublicationInfo<*>.update(
-		transform: (old: PublicationInfo<*>) -> PublicationInfo<*>,
-	): PublicationInfo<*> {
-		val index = feed.indexOf(this)
-		val new = transform(this)
-		feed[index] = new
-		return new
 	}
 }
 

@@ -1,10 +1,8 @@
 package com.creativehub.app.viewmodel
 
 import android.content.Context
-import androidx.compose.runtime.compositionLocalOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
+import androidx.lifecycle.viewModelScope
 import com.creativehub.app.api.APIClient
 import com.creativehub.app.api.login
 import com.creativehub.app.api.register
@@ -13,9 +11,19 @@ import com.creativehub.app.model.User
 import com.creativehub.app.util.getGoogleSignInClient
 import io.ktor.client.plugins.*
 import io.ktor.client.statement.*
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 class UserStateViewModel : BusyViewModel() {
+	private var _onAuthStateChanged: (User?) -> Unit = {}
 	var user by mutableStateOf<User?>(null)
+
+	init {
+		snapshotFlow { user }
+			.onEach { _onAuthStateChanged(it) }
+			.launchIn(viewModelScope)
+	}
 
 	suspend fun login(email: String, password: String): String? = runBusy {
 		val result = APIClient.login(email, password)
@@ -56,6 +64,10 @@ class UserStateViewModel : BusyViewModel() {
 	}
 
 	val isLoggedIn get() = user != null
+
+	fun onAuthStateChanged(action: (User?) -> Unit) {
+		_onAuthStateChanged = action
+	}
 }
 
 val LocalUserState = compositionLocalOf<UserStateViewModel> { error("User State Not Found!") }

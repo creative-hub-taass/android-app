@@ -66,7 +66,7 @@ fun SocialBar(info: PublicationInfo<*>) {
 		IconButton(onClick = {
 			if (user != null) {
 				coroutineScope.launch {
-					feed.togglePublicationLike(info, user.id)
+					feed.toggleLike(info, user.id)
 				}
 			} else navigation.navigate(Destination.Login.route)
 		}, modifier = Modifier.constrainAs(likeBtn) {

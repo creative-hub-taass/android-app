@@ -7,7 +7,6 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -26,7 +25,6 @@ import com.creativehub.app.ui.theme.Typography
 import com.creativehub.app.util.getPreviewArtwork
 import com.creativehub.app.viewmodel.FeedStateViewModel
 import com.creativehub.app.viewmodel.LocalFeedState
-import com.creativehub.app.viewmodel.LocalUserState
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.material.shimmer
@@ -38,15 +36,8 @@ import kotlinx.datetime.toLocalDateTime
 fun ArtworkFeedElement(info: PublicationInfo<Artwork>) {
 	val indication = LocalIndication.current
 	val context = LocalContext.current
-	val feed = LocalFeedState.current
-	val user = LocalUserState.current
 	val navigation = LocalNavigationState.current
 	val artwork = info.publication
-	if (!info.loaded) {
-		LaunchedEffect(Unit) {
-			feed.fetchPublicationInfo(info, user.user?.id)
-		}
-	}
 	Box(modifier = Modifier
 		.fillMaxWidth()
 		.padding(2.dp, 4.dp)) {

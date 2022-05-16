@@ -13,11 +13,16 @@ import com.creativehub.app.viewmodel.LocalFeedState
 import com.creativehub.app.viewmodel.LocalUserState
 import com.creativehub.app.viewmodel.UserStateViewModel
 
+
 class MainActivity : ComponentActivity() {
 	private val userState by viewModels<UserStateViewModel>()
 	private val feedState by viewModels<FeedStateViewModel>()
+
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
+		userState.onAuthStateChanged { user ->
+			feedState.updateFeed(user)
+		}
 		setContent {
 			CompositionLocalProvider(
 				LocalUserState provides userState,
