@@ -84,6 +84,17 @@ sealed class Destination(
 		{ "home/post/${it}" }
 	)
 
+	object Creator : Destination(
+		"home/creator/{id}",
+		"Creator",
+		Icons.Default.VerifiedUser,
+		listOf(navArgument("id") {
+			nullable = false
+			type = NavType.StringType
+		}),
+		{ "home/creator/${it}" }
+	)
+
 	companion object {
 		fun getStartDestination() = Home.route
 	}

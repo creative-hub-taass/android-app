@@ -42,13 +42,20 @@ fun CreativeHubNavHost(modifier: Modifier) {
 				ProfileScreen()
 			}
 			composable(Destination.Artwork.route, arguments = Destination.Artwork.arguments) {
-				Text(text = Destination.Artwork.label + (it.arguments?.getString("id") ?: "?"))
+				// TODO
+				Text(text = Destination.Artwork.label + " " + (it.arguments?.getString("id") ?: "?"))
 			}
 			composable(Destination.Event.route, arguments = Destination.Event.arguments) {
-				Text(text = Destination.Event.label + (it.arguments?.getString("id") ?: "?"))
+				// TODO
+				Text(text = Destination.Event.label + " " + (it.arguments?.getString("id") ?: "?"))
 			}
 			composable(Destination.Post.route, arguments = Destination.Post.arguments) {
-				Text(text = Destination.Post.label + (it.arguments?.getString("id") ?: "?"))
+				// TODO
+				Text(text = Destination.Post.label + " " + (it.arguments?.getString("id") ?: "?"))
+			}
+			composable(Destination.Creator.route, arguments = Destination.Creator.arguments) {
+				// TODO
+				Text(text = Destination.Creator.label + " " + (it.arguments?.getString("id") ?: "?"))
 			}
 		}
 		composable(Destination.Login.route) {

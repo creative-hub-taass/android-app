@@ -7,17 +7,26 @@ import java.util.*
 
 fun getPreviewArtwork(): PublicationInfo<Artwork> {
 	val id = UUID.randomUUID().toString()
-	val user = getPreviewCreator()
+	val user1 = getPreviewCreator()
+	val user2 = getPreviewCreator()
 	val artwork = Artwork(
 		id = id,
 		timestamp = Clock.System.now(),
 		lastUpdate = Clock.System.now(),
-		creations = listOf(ArtworkCreation(
-			id = UUID.randomUUID().toString(),
-			user = user.id,
-			creationType = CreationType.AUTHOR,
-			artworkId = id
-		)),
+		creations = listOf(
+			ArtworkCreation(
+				id = UUID.randomUUID().toString(),
+				user = user1.id,
+				creationType = CreationType.AUTHOR,
+				artworkId = id
+			),
+			ArtworkCreation(
+				id = UUID.randomUUID().toString(),
+				user = user2.id,
+				creationType = CreationType.AUTHOR,
+				artworkId = id
+			)
+		),
 		creationDateTime = Instant.parse("1927-01-01T00:00:00+00:00"),
 		name = "Early Canvas Model B3 \"Wassily\" Chair, Black Eisengarn",
 		description = "Chromium-plated tubular steel and original Eisengarn canvas",
@@ -33,7 +42,7 @@ fun getPreviewArtwork(): PublicationInfo<Artwork> {
 		paymentEmail = "pay@creativehub.com",
 		availableCopies = 1
 	)
-	val creators = listOf(user)
+	val creators = listOf(user1, user2)
 	val likes = 15
 	val comments = listOf(
 		Comment(UUID.randomUUID().toString(), UUID.randomUUID().toString(), id, "Test comment"),

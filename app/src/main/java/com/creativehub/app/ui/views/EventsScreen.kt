@@ -12,6 +12,7 @@ import com.creativehub.app.viewmodel.LocalUserState
 
 @Composable
 fun EventsScreen() {
+	// TODO
 	val vm = LocalUserState.current
 	Column(Modifier.fillMaxSize(),
 		   verticalArrangement = Arrangement.Center,

@@ -1,7 +1,10 @@
 package com.creativehub.app.ui.components
 
 import androidx.compose.foundation.LocalIndication
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Card
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
@@ -11,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -45,8 +47,8 @@ fun ArtworkFeedElement(info: PublicationInfo<Artwork>) {
 			indication = indication
 		) {
 			val date = artwork.creationDateTime.toLocalDateTime(TimeZone.currentSystemDefault()).year
-			val creators = info.creators?.joinToString { it.nickname } ?: ""
 			Column {
+				CreatorsBar(info)
 				AsyncImage(
 					model = ImageRequest.Builder(context)
 						.data(artwork.images.first())
@@ -58,19 +60,11 @@ fun ArtworkFeedElement(info: PublicationInfo<Artwork>) {
 					contentScale = ContentScale.FillWidth,
 				)
 				SocialBar(info)
-				Column(Modifier.padding(8.dp)) {
-					Text(
-						text = "${artwork.name.trim()}, $date",
-						style = Typography.subtitle1
-					)
-					Spacer(modifier = Modifier.height(4.dp))
-					Text(
-						text = creators,
-						modifier = Modifier.fillMaxWidth(),
-						style = Typography.body1,
-						fontWeight = FontWeight.Bold
-					)
-				}
+				Text(
+					text = "${artwork.name.trim()}, $date",
+					modifier = Modifier.padding(8.dp),
+					style = Typography.subtitle1
+				)
 			}
 		}
 	}
