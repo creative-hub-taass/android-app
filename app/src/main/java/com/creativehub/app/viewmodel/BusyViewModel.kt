@@ -16,4 +16,5 @@ abstract class BusyViewModel : ViewModel() {
 		_isBusy = false
 		return result
 	}
+
 }

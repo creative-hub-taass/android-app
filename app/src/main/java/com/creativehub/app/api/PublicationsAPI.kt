@@ -1,7 +1,6 @@
 package com.creativehub.app.api
 
-import com.creativehub.app.model.Creation
-import com.creativehub.app.model.PublicUser
+import com.creativehub.app.model.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.http.*
@@ -14,4 +13,21 @@ suspend fun APIClient.getCreators(creations: List<Creation>) = runCatching {
 		.zip(creations)
 		.filter { it.first.id == it.second.user }
 		.map { Pair(it.first, it.second.creationType) }
+}
+
+suspend fun APIClient.getArtwork(artworkId: String) = runCatching {
+	APIClient().get("$PUBLICATIONS_BASE_URL/-/artworks/$artworkId") {
+
+	}.body<Artwork>()
+}
+
+suspend fun APIClient.getEvent(eventId: String) = runCatching {
+	APIClient().get("$PUBLICATIONS_BASE_URL/-/artworks/$eventId") {
+	}.body<Event>()
+}
+
+suspend fun APIClient.getPost(postId: String) = runCatching {
+	APIClient().get("$PUBLICATIONS_BASE_URL/-/artworks/$postId") {
+
+	}.body<Post>()
 }
