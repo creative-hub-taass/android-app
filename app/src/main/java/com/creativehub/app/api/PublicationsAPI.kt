@@ -20,11 +20,11 @@ suspend fun APIClient.getArtwork(artworkId: String) = runCatching {
 }
 
 suspend fun APIClient.getEvent(eventId: String) = runCatching {
-	APIClient().get("$PUBLICATIONS_BASE_URL/-/artworks/$eventId").body<Event>()
+	APIClient().get("$PUBLICATIONS_BASE_URL/-/events/$eventId").body<Event>()
 }
 
 suspend fun APIClient.getPost(postId: String) = runCatching {
-	APIClient().get("$PUBLICATIONS_BASE_URL/-/artworks/$postId").body<Post>()
+	APIClient().get("$PUBLICATIONS_BASE_URL/-/posts/$postId").body<Post>()
 }
 
 suspend fun APIClient.getListUsers(listId: List<String>) = runCatching {
