@@ -10,6 +10,7 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.creativehub.app.ui.components.AppBar
 import com.creativehub.app.ui.components.BottomBar
 import com.creativehub.app.ui.components.CreativeHubNavHost
@@ -35,7 +36,10 @@ val LocalNavigationState = compositionLocalOf<NavHostController> { error("Naviga
 @Preview(showBackground = true, showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Composable
 fun DefaultPreviewLight() {
-	CompositionLocalProvider(LocalUserState provides UserStateViewModel()) {
+	CompositionLocalProvider(
+		LocalUserState provides UserStateViewModel(),
+		LocalNavigationState provides rememberNavController()
+	) {
 		CreativeHubApp()
 	}
 }
@@ -43,7 +47,10 @@ fun DefaultPreviewLight() {
 @Preview(showBackground = true, showSystemUi = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun DefaultPreviewDark() {
-	CompositionLocalProvider(LocalUserState provides UserStateViewModel()) {
+	CompositionLocalProvider(
+		LocalUserState provides UserStateViewModel(),
+		LocalNavigationState provides rememberNavController()
+	) {
 		CreativeHubApp()
 	}
 }

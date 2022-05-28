@@ -16,6 +16,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.creativehub.app.R
@@ -27,6 +28,8 @@ import com.creativehub.app.ui.theme.Typography
 import com.creativehub.app.util.getPreviewArtwork
 import com.creativehub.app.viewmodel.FeedStateViewModel
 import com.creativehub.app.viewmodel.LocalFeedState
+import com.creativehub.app.viewmodel.LocalUserState
+import com.creativehub.app.viewmodel.UserStateViewModel
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
@@ -37,6 +40,7 @@ fun ArtworkFeedElement(info: PublicationInfo<Artwork>) {
 	val context = LocalContext.current
 	val navigation = LocalNavigationState.current
 	val artwork = info.publication
+	val date = artwork.creationDateTime.toLocalDateTime(TimeZone.currentSystemDefault()).year
 	Box(modifier = Modifier
 		.fillMaxWidth()
 		.padding(2.dp, 4.dp)) {
@@ -46,7 +50,6 @@ fun ArtworkFeedElement(info: PublicationInfo<Artwork>) {
 			elevation = 4.dp,
 			indication = indication
 		) {
-			val date = artwork.creationDateTime.toLocalDateTime(TimeZone.currentSystemDefault()).year
 			Column {
 				CreatorsBar(info)
 				AsyncImage(
@@ -63,7 +66,7 @@ fun ArtworkFeedElement(info: PublicationInfo<Artwork>) {
 				Text(
 					text = "${artwork.name.trim()}, $date",
 					modifier = Modifier.padding(8.dp),
-					style = Typography.subtitle1
+					style = Typography.h6
 				)
 			}
 		}
@@ -73,7 +76,11 @@ fun ArtworkFeedElement(info: PublicationInfo<Artwork>) {
 @Preview
 @Composable
 fun ArtworkFeedElementPreview() {
-	CompositionLocalProvider(LocalFeedState provides FeedStateViewModel()) {
+	CompositionLocalProvider(
+		LocalFeedState provides FeedStateViewModel(),
+		LocalUserState provides UserStateViewModel(),
+		LocalNavigationState provides rememberNavController()
+	) {
 		ArtworkFeedElement(getPreviewArtwork())
 	}
 }
