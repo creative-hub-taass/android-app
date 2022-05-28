@@ -45,7 +45,7 @@ fun CreatorsBar(info: PublicationInfo<*>) {
 			for ((i, creator) in creators.withIndex()) {
 				AsyncImage(
 					model = ImageRequest.Builder(context)
-						.data(creator.creator.avatar)
+						.data(creator.creator?.avatar)
 						.crossfade(true)
 						.build(),
 					contentDescription = "profile picture",

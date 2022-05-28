@@ -20,7 +20,7 @@ open class PublicUser(
 	override val id: String,
 	override val username: String,
 	override val nickname: String,
-	override val creator: PublicCreator,
+	override val creator: PublicCreator?,
 	override val inspirerIds: List<String>,
 	override val fanIds: List<String>,
 ) : IPublicUser
