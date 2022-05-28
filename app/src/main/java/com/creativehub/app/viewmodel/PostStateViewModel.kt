@@ -3,7 +3,7 @@ package com.creativehub.app.viewmodel
 import androidx.compose.runtime.*
 import com.creativehub.app.api.*
 import com.creativehub.app.model.*
-import com.creativehub.app.util.fetchUsersofComments
+import com.creativehub.app.util.fetchUsersOfComments
 import io.ktor.client.plugins.*
 import io.ktor.client.statement.*
 
@@ -31,7 +31,7 @@ class PostStateViewModel : BusyViewModel() {
 				listComments.addAll(comments)
 				countLikes = mutableStateOf(likes)
 			}
-			fetchUsersofComments(listComments)
+			fetchUsersOfComments(listComments)
 		}
 
 		return@runBusy when (val exception = result.exceptionOrNull()) {

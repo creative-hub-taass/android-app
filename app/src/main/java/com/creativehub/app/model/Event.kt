@@ -1,7 +1,6 @@
 package com.creativehub.app.model
 
 import com.creativehub.app.BuildConfig
-import com.google.android.gms.maps.model.LatLng
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 
@@ -26,7 +25,5 @@ data class Event(
 	data class Coordinates(
 		val latitude: Double,
 		val longitude: Double,
-	) {
-		fun toLatLng() = LatLng(latitude, longitude)
-	}
+	)
 }

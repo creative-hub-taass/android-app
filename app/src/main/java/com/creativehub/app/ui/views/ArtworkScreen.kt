@@ -1,31 +1,26 @@
 package com.creativehub.app.ui.views
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Card
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.CalendarToday
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import coil.compose.AsyncImagePainter.State.Empty.painter
 import coil.request.ImageRequest
 import com.creativehub.app.R
 import com.creativehub.app.api.APIClient
@@ -38,35 +33,28 @@ import com.creativehub.app.ui.theme.Typography
 import com.creativehub.app.viewmodel.LocalArtworkState
 import com.creativehub.app.viewmodel.LocalUserState
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toLocalDateTime
-
-
-class Click(bool: Boolean) {
-	var showComments by mutableStateOf(bool)
-}
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 
 @Composable
 fun ArtworkScreen(id: String) {
-	val vm = LocalUserState.current
+	val userState = LocalUserState.current
+	val user = userState.user
 	val artworkService = LocalArtworkState.current
-	var liked: Boolean? = false
-	var authorFollowed: Boolean? = false
-	val click = remember {
-		Click(false)
-	}
-
+	var liked by rememberSaveable { mutableStateOf(false) }
+	var showComments by rememberSaveable { mutableStateOf(false) }
+	val artwork = artworkService.artwork
 
 	LaunchedEffect(Unit) {
 		artworkService.fetchArtwork(id)
-		if (vm.user != null) {
-			liked = APIClient.getUserLikedPublication(id, vm.user!!.id).getOrNull()
-			vm.user!!.inspirerIds.forEach { inspirer ->
-				authorFollowed = (inspirer.compareTo(artworkService.listUser.first().first.id) == 0)
-			}
+		if (user != null) {
+			liked = APIClient.getUserLikedPublication(id, user.id).getOrDefault(false)
 		}
 	}
 
-	if (artworkService.artwork == null) {
+	if (artwork == null) {
 		CircularProgressIndicator(
 			modifier = Modifier
 				.fillMaxWidth()
@@ -74,20 +62,23 @@ fun ArtworkScreen(id: String) {
 				.wrapContentWidth(Alignment.CenterHorizontally)
 		)
 	} else {
-		Column(Modifier
-				   .padding(16.dp)
-				   .fillMaxWidth()
-				   .verticalScroll(rememberScrollState())) {
+		Column(
+			modifier = Modifier
+				.padding(16.dp)
+				.fillMaxWidth()
+				.verticalScroll(rememberScrollState())
+		) {
 			Card(
 				border = BorderStroke(2.dp, Color.Black),
 				backgroundColor = Color.LightGray,
 				modifier = Modifier.padding(5.dp)) {
 				Column(
-					Modifier
+					modifier = Modifier
 						.padding(16.dp)
-						.fillMaxWidth()) {
+						.fillMaxWidth()
+				) {
 					Text(
-						text = "${artworkService.artwork?.name?.trim()}",
+						text = artwork.name.trim(),
 						modifier = Modifier.padding(8.dp),
 						fontWeight = FontWeight.Bold
 					)
@@ -99,20 +90,20 @@ fun ArtworkScreen(id: String) {
 							.fillMaxWidth()
 					) {
 						artworkService.listImages.forEach { image ->
-								AsyncImage(
-									model = ImageRequest.Builder(LocalContext.current)
-										.data(image)
-										.crossfade(true)
-										.build(),
-									placeholder = painterResource(R.drawable.placeholder),
-									contentDescription = "image",
-									contentScale = ContentScale.Crop
-								)
-							}
+							AsyncImage(
+								model = ImageRequest.Builder(LocalContext.current)
+									.data(image)
+									.crossfade(true)
+									.build(),
+								placeholder = painterResource(R.drawable.placeholder),
+								contentDescription = "image",
+								contentScale = ContentScale.Crop
+							)
+						}
 					}
-					Row (modifier = Modifier
+					Row(modifier = Modifier
 						.horizontalScroll(rememberScrollState())
-						.padding(top = 5.dp)){
+						.padding(top = 5.dp)) {
 						artworkService.listUser.forEach { user ->
 							Text(
 								text = user.first.nickname,
@@ -130,8 +121,9 @@ fun ArtworkScreen(id: String) {
 						}
 					}
 					Row {
-						val date =
-							artworkService.artwork?.creationDateTime?.toLocalDateTime(TimeZone.currentSystemDefault())?.date
+						val date = artwork.creationDateTime.toLocalDateTime(TimeZone.currentSystemDefault())
+							.toJavaLocalDateTime().format(
+								DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM))
 						Icon(
 							imageVector = Icons.Rounded.CalendarToday,
 							contentDescription = "Icon",
@@ -140,13 +132,13 @@ fun ArtworkScreen(id: String) {
 						)
 
 						Text(
-							text = "$date",
+							text = date,
 							modifier = Modifier.padding(8.dp),
 							fontWeight = FontWeight.Bold
 						)
 					}
 					Text(
-						text = "${artworkService.artwork?.description}",
+						text = artwork.description,
 						fontWeight = FontWeight.Bold,
 						modifier = Modifier.padding(5.dp),
 						style = Typography.subtitle1
@@ -156,14 +148,14 @@ fun ArtworkScreen(id: String) {
 							.fillMaxWidth()
 							.horizontalScroll(rememberScrollState())
 					) {
-						if (artworkService.artwork?.onSale == true) {
+						if (artwork.onSale) {
 							Text(
-								text = "On sale: ${artworkService.artwork!!.price} ${artworkService.artwork!!.currency} - ",
+								text = "On sale: ${artwork.price} ${artwork.currency} - ",
 								fontWeight = FontWeight.Bold,
 								style = Typography.subtitle1
 							)
 							Text(
-								text = "${artworkService.artwork!!.availableCopies} available copies",
+								text = "${artwork.availableCopies} available copies",
 								fontWeight = FontWeight.Bold,
 								style = Typography.subtitle1
 							)
@@ -176,24 +168,21 @@ fun ArtworkScreen(id: String) {
 			artworkService.listUser.forEach { pair ->
 				listPublicUser.add(pair.first)
 			}
-			if (artworkService.artwork != null) {
-				val tmpPublicationInfo = PublicationInfo(artworkService.artwork!!,
-														 listPublicUser.toList(),
-														 artworkService.countLikes.value,
-														 liked,
-														 artworkService.listComments,
-														 artworkService.listComments.size,
-														 authorFollowed)
-				SocialBar(info = tmpPublicationInfo)
-
-				ClickableText(
-					text = AnnotatedString("show comments"),
-					modifier = Modifier.align(Alignment.CenterHorizontally),
-					onClick = {
-						click.showComments = click.showComments.not()
-					})
+			val tmpPublicationInfo = PublicationInfo(artwork,
+													 listPublicUser.toList(),
+													 artworkService.countLikes.value,
+													 liked,
+													 artworkService.listComments,
+													 artworkService.listComments.size,
+													 null)
+			SocialBar(info = tmpPublicationInfo)
+			OutlinedButton(
+				modifier = Modifier.align(Alignment.CenterHorizontally),
+				onClick = { showComments = !showComments },
+			) {
+				Text("Show comments")
 			}
-			if (click.showComments) {
+			AnimatedVisibility(showComments) {
 				CommentsList(listCommentInfo = artworkService.listCommentsUser)
 			}
 		}

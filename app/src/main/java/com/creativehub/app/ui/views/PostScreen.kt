@@ -1,27 +1,21 @@
 package com.creativehub.app.ui.views
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Card
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.CalendarToday
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.creativehub.app.api.APIClient
 import com.creativehub.app.api.getUserLikedPublication
@@ -30,34 +24,32 @@ import com.creativehub.app.model.PublicationInfo
 import com.creativehub.app.ui.components.CommentsList
 import com.creativehub.app.ui.components.SocialBar
 import com.creativehub.app.ui.theme.Typography
-import com.creativehub.app.util.Click
 import com.creativehub.app.viewmodel.LocalPostState
 import com.creativehub.app.viewmodel.LocalUserState
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toLocalDateTime
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 
 
 @Composable
 fun PostScreen(id: String) {
 	val vm = LocalUserState.current
+	val user = vm.user
 	val postService = LocalPostState.current
-	var liked: Boolean? = false
-	var authorFollowed: Boolean? = false
-	val click = remember {
-		Click(false)
-	}
-	
+	val post = postService.post
+	var liked by rememberSaveable { mutableStateOf(false) }
+	var showComments by rememberSaveable { mutableStateOf(false) }
+
 	LaunchedEffect(Unit) {
 		postService.fetchPost(id)
-		if (vm.user != null) {
-			liked = APIClient.getUserLikedPublication(id, vm.user!!.id).getOrNull()
-			vm.user!!.inspirerIds.forEach { inspirer ->
-				authorFollowed = (inspirer.compareTo(postService.listUser.first().first.id) == 0)
-			}
+		if (user != null) {
+			liked = APIClient.getUserLikedPublication(id, user.id).getOrDefault(false)
 		}
 	}
 
-	if(postService.post == null) {
+	if (post == null) {
 		CircularProgressIndicator(
 			modifier = Modifier
 				.fillMaxWidth()
@@ -69,37 +61,38 @@ fun PostScreen(id: String) {
 				   .padding(16.dp)
 				   .fillMaxWidth()
 				   .verticalScroll(rememberScrollState())) {
-				Card(
-					border = BorderStroke(2.dp, Color.Black),
-					backgroundColor = Color.LightGray,
-					modifier = Modifier.padding(5.dp)) {
-					Column(Modifier
-							   .padding(16.dp)
-							   .fillMaxWidth()) {
-						Text(
-							text = "${postService.post?.title}",
-							modifier = Modifier
-								.padding(8.dp)
-								.align(Alignment.CenterHorizontally),
-							fontWeight = FontWeight.ExtraBold,
-							fontStyle = FontStyle.Italic
-						)
-						Text(
-							text = "${postService.post?.body}",
-							modifier = Modifier
-								.padding(10.dp)
-								.align(Alignment.Start),
-							fontWeight = FontWeight.Medium
-						)
-					}
+			Card(
+				border = BorderStroke(2.dp, Color.Black),
+				backgroundColor = Color.LightGray,
+				modifier = Modifier.padding(5.dp)) {
+				Column(Modifier
+						   .padding(16.dp)
+						   .fillMaxWidth()) {
+					Text(
+						text = post.title,
+						modifier = Modifier
+							.padding(8.dp)
+							.align(Alignment.CenterHorizontally),
+						fontWeight = FontWeight.ExtraBold,
+						fontStyle = FontStyle.Italic
+					)
+					Text(
+						text = post.body,
+						modifier = Modifier
+							.padding(10.dp)
+							.align(Alignment.Start),
+						fontWeight = FontWeight.Medium
+					)
 				}
+			}
 			Card(
 				border = BorderStroke(2.dp, Color.Black),
 				backgroundColor = Color.LightGray,
 				modifier = Modifier.padding(5.dp)
 			) {
 				Column {
-					Row(modifier = Modifier.horizontalScroll(rememberScrollState())
+					Row(modifier = Modifier
+						.horizontalScroll(rememberScrollState())
 						.fillMaxWidth()
 						.padding(top = 5.dp)) {
 						postService.listUser.forEach { user ->
@@ -120,9 +113,10 @@ fun PostScreen(id: String) {
 					}
 					Row(
 						modifier = Modifier.padding(10.dp)
-					){
-						val date =
-							postService.post?.lastUpdate?.toLocalDateTime(TimeZone.currentSystemDefault())?.date
+					) {
+						val date = post.lastUpdate.toLocalDateTime(TimeZone.currentSystemDefault())
+							.toJavaLocalDateTime().format(
+								DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT))
 						Icon(
 							imageVector = Icons.Rounded.CalendarToday,
 							contentDescription = "Icon",
@@ -138,28 +132,26 @@ fun PostScreen(id: String) {
 				}
 			}
 
-			
+
 			val listPublicUser = mutableListOf<PublicUser>()
 			postService.listUser.forEach { pair ->
 				listPublicUser.add(pair.first)
 			}
-			if(postService.post != null){
-				val tmpPublicationInfo = PublicationInfo(postService.post!!,
-														listPublicUser.toList(),
-														postService.countLikes.value,
-														liked,
-														postService.listComments,
-														postService.listComments.size,
-														authorFollowed)
-				SocialBar(info = tmpPublicationInfo)
-				ClickableText(
-					text = AnnotatedString("show comments"),
-					modifier = Modifier.align(Alignment.CenterHorizontally),
-					onClick = {
-						click.showComments = click.showComments.not()
-					})
+			val tmpPublicationInfo = PublicationInfo(post,
+													 listPublicUser.toList(),
+													 postService.countLikes.value,
+													 liked,
+													 postService.listComments,
+													 postService.listComments.size,
+													 null)
+			SocialBar(info = tmpPublicationInfo)
+			OutlinedButton(
+				modifier = Modifier.align(Alignment.CenterHorizontally),
+				onClick = { showComments = !showComments },
+			) {
+				Text("Show comments")
 			}
-			if(click.showComments){
+			AnimatedVisibility(showComments) {
 				CommentsList(listCommentInfo = postService.listCommentsUser)
 			}
 		}
