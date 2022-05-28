@@ -4,15 +4,19 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.rememberNavController
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
+import com.creativehub.app.ui.LocalNavigationState
 import com.creativehub.app.ui.components.ErrorItem
 import com.creativehub.app.ui.components.FeedElement
+import com.creativehub.app.viewmodel.FeedStateViewModel
 import com.creativehub.app.viewmodel.LocalFeedState
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -82,5 +86,10 @@ fun FeedScreen() {
 @Preview
 @Composable
 fun FeedPreview() {
-	FeedScreen()
+	CompositionLocalProvider(
+		LocalFeedState provides FeedStateViewModel(),
+		LocalNavigationState provides rememberNavController()
+	) {
+		FeedScreen()
+	}
 }
