@@ -8,15 +8,13 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.navigation.compose.rememberNavController
 import com.creativehub.app.ui.CreativeHubApp
 import com.creativehub.app.ui.LocalNavigationState
-import com.creativehub.app.viewmodel.FeedStateViewModel
-import com.creativehub.app.viewmodel.LocalFeedState
-import com.creativehub.app.viewmodel.LocalUserState
-import com.creativehub.app.viewmodel.UserStateViewModel
+import com.creativehub.app.viewmodel.*
 
 
 class MainActivity : ComponentActivity() {
 	private val userState by viewModels<UserStateViewModel>()
 	private val feedState by viewModels<FeedStateViewModel>()
+	private val artworkState by viewModels<ArtworkStateViewModel>()
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -27,7 +25,8 @@ class MainActivity : ComponentActivity() {
 			CompositionLocalProvider(
 				LocalUserState provides userState,
 				LocalFeedState provides feedState,
-				LocalNavigationState provides rememberNavController()
+				LocalNavigationState provides rememberNavController(),
+				LocalArtworkState provides artworkState
 			) {
 				CreativeHubApp()
 			}

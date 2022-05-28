@@ -7,6 +7,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
@@ -42,8 +43,7 @@ fun CreativeHubNavHost(modifier: Modifier) {
 				ProfileScreen()
 			}
 			composable(Destination.Artwork.route, arguments = Destination.Artwork.arguments) {
-				// TODO
-				Text(text = Destination.Artwork.label + " " + (it.arguments?.getString("id") ?: "?"))
+				ArtworkScreen((it.arguments?.getString("id") ?: "?"))
 			}
 			composable(Destination.Event.route, arguments = Destination.Event.arguments) {
 				// TODO
