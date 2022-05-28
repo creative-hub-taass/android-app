@@ -28,7 +28,7 @@ suspend fun APIClient.getPost(postId: String) = runCatching {
 }
 
 suspend fun APIClient.getListUsers(listId: List<String>) = runCatching {
-	APIClient().post("$USERS_BASE_URL/-/public"){
+	APIClient().post("$USERS_BASE_URL/-/public") {
 		contentType(ContentType.Application.Json)
 		setBody(listId)
 	}.body<List<PublicUser>>()

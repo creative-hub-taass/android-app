@@ -1,9 +1,12 @@
 package com.creativehub.app.ui.views
 
-import androidx.compose.foundation.*
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
@@ -11,7 +14,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.CalendarToday
 import androidx.compose.runtime.*
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,20 +27,21 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter.State.Empty.painter
 import coil.request.ImageRequest
-import com.creativehub.app.viewmodel.LocalArtworkState
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import com.creativehub.app.R
 import com.creativehub.app.api.APIClient
 import com.creativehub.app.api.getUserLikedPublication
-import com.creativehub.app.model.*
+import com.creativehub.app.model.PublicUser
+import com.creativehub.app.model.PublicationInfo
 import com.creativehub.app.ui.components.CommentsList
 import com.creativehub.app.ui.components.SocialBar
 import com.creativehub.app.ui.theme.Typography
+import com.creativehub.app.viewmodel.LocalArtworkState
 import com.creativehub.app.viewmodel.LocalUserState
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 
-class Click(bool: Boolean){
+class Click(bool: Boolean) {
 	var showComments by mutableStateOf(bool)
 }
 
@@ -190,7 +193,7 @@ fun ArtworkScreen(id: String) {
 						click.showComments = click.showComments.not()
 					})
 			}
-			if(click.showComments){
+			if (click.showComments) {
 				CommentsList(listCommentInfo = artworkService.listCommentsUser)
 			}
 		}
