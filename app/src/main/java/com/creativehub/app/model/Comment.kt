@@ -12,5 +12,5 @@ data class Comment(
 
 class CommentInfo(
 	val comment: Comment,
-	val user: PublicUser
+	val user: PublicUser,
 )

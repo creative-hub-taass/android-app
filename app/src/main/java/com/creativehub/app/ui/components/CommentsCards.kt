@@ -18,7 +18,7 @@ import com.creativehub.app.ui.theme.Typography
 fun CommentsList(listCommentInfo: SnapshotStateList<CommentInfo>) {
 	Column(
 		Modifier.padding(10.dp)
-	){
+	) {
 		listCommentInfo.forEach { comment ->
 			Card(
 				backgroundColor = Color.LightGray,
@@ -27,7 +27,7 @@ fun CommentsList(listCommentInfo: SnapshotStateList<CommentInfo>) {
 			) {
 				Column(Modifier
 						   .fillMaxWidth()
-						   .padding(15.dp)){
+						   .padding(15.dp)) {
 					Text(
 						text = "@${comment.user.nickname}",
 						fontWeight = FontWeight.Bold,

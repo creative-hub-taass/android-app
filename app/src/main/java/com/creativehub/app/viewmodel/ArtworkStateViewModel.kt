@@ -24,10 +24,10 @@ class ArtworkStateViewModel : BusyViewModel() {
 		artwork = result.getOrNull()
 		if (artwork != null) {
 			val list = (APIClient.getCreators(artwork!!.creations)).getOrNull()
-			if(list != null) {
+			if (list != null) {
 				listUser.addAll(list)
 			}
-			if(comments != null && likes != null) {
+			if (comments != null && likes != null) {
 				listComments.addAll(comments)
 				countLikes = mutableStateOf(likes)
 			}
@@ -49,14 +49,14 @@ class ArtworkStateViewModel : BusyViewModel() {
 	private suspend fun fetchUserofComments(): String? = runBusy {
 		val listId = mutableStateListOf<String>()
 		listComments.forEach { comment ->
-			if(!listId.contains(comment.userId))
+			if (!listId.contains(comment.userId))
 				listId.add(comment.userId)
 		}
 		val result = APIClient.getListUsers(listId)
-		if(result.getOrNull() != null){
+		if (result.getOrNull() != null) {
 			result.getOrNull()!!.forEach { publicUser ->
 				listComments.forEach { comment ->
-					if (publicUser.id.compareTo(comment.userId) == 0){
+					if (publicUser.id.compareTo(comment.userId) == 0) {
 						listCommentsUser.add(CommentInfo(comment, publicUser))
 					}
 				}
