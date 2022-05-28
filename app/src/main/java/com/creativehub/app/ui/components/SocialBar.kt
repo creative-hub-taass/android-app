@@ -33,7 +33,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun SocialBar(info: PublicationInfo<*>) {
 	val userState = LocalUserState.current
-	val feed = LocalFeedState.current
+	val feedState = LocalFeedState.current
 	val navigation = LocalNavigationState.current
 	val coroutineScope = rememberCoroutineScope()
 	val user = userState.user
@@ -66,7 +66,7 @@ fun SocialBar(info: PublicationInfo<*>) {
 		IconButton(onClick = {
 			if (user != null) {
 				coroutineScope.launch {
-					feed.toggleLike(info, user.id)
+					feedState.toggleLike(info, user.id)
 				}
 			} else navigation.navigate(Destination.Login.route)
 		}, modifier = Modifier.constrainAs(likeBtn) {

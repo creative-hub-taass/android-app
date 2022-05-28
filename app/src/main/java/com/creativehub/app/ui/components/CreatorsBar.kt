@@ -64,7 +64,7 @@ fun CreatorsBar(info: PublicationInfo<*>) {
 			Text(
 				text = creator.nickname,
 				modifier = Modifier
-					.padding(start = 8.dp)
+					.padding(start = 4.dp)
 					.clickable { navigation.navigate(Destination.Creator.argRoute(creator.id)) },
 				style = Typography.body1,
 				fontWeight = FontWeight.Bold
