@@ -1,27 +1,98 @@
 package com.creativehub.app.ui.views
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.rememberNavController
+import androidx.paging.LoadState
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.items
+import com.creativehub.app.ui.LocalNavigationState
+import com.creativehub.app.ui.components.ErrorItem
+import com.creativehub.app.ui.components.EventFeedElement
+import com.creativehub.app.viewmodel.FeedStateViewModel
+import com.creativehub.app.viewmodel.LocalFeedState
 import com.creativehub.app.viewmodel.LocalUserState
+import com.creativehub.app.viewmodel.UserStateViewModel
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
 @Composable
 fun EventsScreen() {
-	// TODO
-	val vm = LocalUserState.current
+	val lazyFeed = LocalFeedState.current.events.collectAsLazyPagingItems()
 	Column(Modifier.fillMaxSize(),
 		   verticalArrangement = Arrangement.Center,
 		   horizontalAlignment = Alignment.CenterHorizontally
 	) {
-		if (vm.isBusy) {
-			CircularProgressIndicator()
-		} else {
-			Text("Hello ${vm.user?.nickname ?: "guest"}!")
+		SwipeRefresh(
+			state = rememberSwipeRefreshState(lazyFeed.loadState.refresh is LoadState.Loading
+													  || lazyFeed.loadState.prepend is LoadState.Loading),
+			onRefresh = { lazyFeed.refresh() }
+		) {
+			LazyColumn(
+				modifier = Modifier.fillMaxSize(),
+				contentPadding = PaddingValues(2.dp)
+			) {
+				items(lazyFeed, { it.publication.id }) {
+					if (it != null) {
+						EventFeedElement(it)
+					}
+				}
+				lazyFeed.apply {
+					when (val refreshState = loadState.refresh) {
+						is LoadState.Error -> {
+							item {
+								ErrorItem(
+									message = refreshState.error.message?.ifEmpty { null } ?: "Network error",
+									modifier = Modifier.fillParentMaxSize(),
+									onClickRetry = { retry() }
+								)
+							}
+						}
+						is LoadState.NotLoading -> {}
+						is LoadState.Loading -> {}
+					}
+					when (val appendState = loadState.append) {
+						is LoadState.NotLoading -> {}
+						is LoadState.Loading -> {
+							item {
+								CircularProgressIndicator(
+									modifier = Modifier
+										.fillMaxWidth()
+										.padding(16.dp)
+										.wrapContentWidth(Alignment.CenterHorizontally)
+								)
+							}
+						}
+						is LoadState.Error -> {
+							item {
+								ErrorItem(
+									message = appendState.error.message?.ifEmpty { null } ?: "Network error",
+									onClickRetry = { retry() }
+								)
+							}
+						}
+					}
+				}
+			}
 		}
+	}
+}
+
+@Preview
+@Composable
+fun EventsScreenPreview() {
+	CompositionLocalProvider(
+		LocalUserState provides UserStateViewModel(),
+		LocalFeedState provides FeedStateViewModel(),
+		LocalNavigationState provides rememberNavController()
+	) {
+		EventsScreen()
 	}
 }
