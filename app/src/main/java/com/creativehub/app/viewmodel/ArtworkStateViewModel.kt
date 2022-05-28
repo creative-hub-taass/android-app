@@ -32,9 +32,6 @@ class ArtworkStateViewModel : BusyViewModel() {
 				countLikes = mutableStateOf(likes)
 			}
 			listImages.addAll(artwork!!.images)
-
-
-
 			fetchUserofComments()
 		}
 
@@ -76,7 +73,7 @@ class ArtworkStateViewModel : BusyViewModel() {
 		listImages.clear()
 		listComments.clear()
 		listCommentsUser.clear()
-		countLikes = mutableStateOf<Int?>(null)
+		countLikes = mutableStateOf(null)
 	}
 }
 

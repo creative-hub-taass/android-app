@@ -23,6 +23,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import coil.compose.AsyncImagePainter.State.Empty.painter
 import coil.request.ImageRequest
 import com.creativehub.app.viewmodel.LocalArtworkState
 import kotlinx.datetime.TimeZone
@@ -52,7 +53,7 @@ fun ArtworkScreen(id: String) {
 	}
 
 
-	LaunchedEffect(Unit, block = {
+	LaunchedEffect(Unit) {
 		artworkService.fetchArtwork(id)
 		if (vm.user != null) {
 			liked = APIClient.getUserLikedPublication(id, vm.user!!.id).getOrNull()
@@ -60,7 +61,7 @@ fun ArtworkScreen(id: String) {
 				authorFollowed = (inspirer.compareTo(artworkService.listUser.first().first.id) == 0)
 			}
 		}
-	})
+	}
 
 	if (artworkService.artwork == null) {
 		CircularProgressIndicator(
@@ -87,26 +88,28 @@ fun ArtworkScreen(id: String) {
 						modifier = Modifier.padding(8.dp),
 						fontWeight = FontWeight.Bold
 					)
-					LazyRow(
-						modifier = Modifier.fillMaxWidth(),
-						contentPadding = PaddingValues(2.dp)
+					Row(
+						modifier = Modifier
+							.horizontalScroll(rememberScrollState())
+							.padding(10.dp)
+							.align(Alignment.CenterHorizontally)
+							.fillMaxWidth()
 					) {
-						items(artworkService.listImages.size) { index ->
-							if (artworkService.listImages[index].isNotEmpty()) {
+						artworkService.listImages.forEach { image ->
 								AsyncImage(
 									model = ImageRequest.Builder(LocalContext.current)
-										.data(artworkService.listImages[index])
+										.data(image)
 										.crossfade(true)
 										.build(),
 									placeholder = painterResource(R.drawable.placeholder),
 									contentDescription = "image",
-									contentScale = ContentScale.Crop,
-									modifier = Modifier.fillParentMaxSize()
+									contentScale = ContentScale.Crop
 								)
 							}
-						}
 					}
-					Row {
+					Row (modifier = Modifier
+						.horizontalScroll(rememberScrollState())
+						.padding(top = 5.dp)){
 						artworkService.listUser.forEach { user ->
 							Text(
 								text = user.first.nickname,
@@ -142,7 +145,7 @@ fun ArtworkScreen(id: String) {
 					Text(
 						text = "${artworkService.artwork?.description}",
 						fontWeight = FontWeight.Bold,
-						modifier = Modifier.padding(10.dp),
+						modifier = Modifier.padding(5.dp),
 						style = Typography.subtitle1
 					)
 					Row(

@@ -15,6 +15,7 @@ class MainActivity : ComponentActivity() {
 	private val userState by viewModels<UserStateViewModel>()
 	private val feedState by viewModels<FeedStateViewModel>()
 	private val artworkState by viewModels<ArtworkStateViewModel>()
+	private val postState by viewModels<PostStateViewModel>()
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -26,7 +27,8 @@ class MainActivity : ComponentActivity() {
 				LocalUserState provides userState,
 				LocalFeedState provides feedState,
 				LocalNavigationState provides rememberNavController(),
-				LocalArtworkState provides artworkState
+				LocalArtworkState provides artworkState,
+				LocalPostState provides postState
 			) {
 				CreativeHubApp()
 			}
