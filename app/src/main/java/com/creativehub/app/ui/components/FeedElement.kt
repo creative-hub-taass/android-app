@@ -11,7 +11,7 @@ import com.creativehub.app.model.PublicationInfo
 fun FeedElement(publicationInfo: PublicationInfo<*>) {
 	when (publicationInfo.publication) {
 		is Artwork -> ArtworkFeedElement(publicationInfo as PublicationInfo<Artwork>)
-		is Event -> {}
+		is Event -> EventFeedElement(publicationInfo as PublicationInfo<Event>)
 		is Post -> {}
 	}
 }
