@@ -31,6 +31,7 @@ import com.creativehub.app.R
 import com.creativehub.app.api.APIClient
 import com.creativehub.app.api.getUserLikedPublication
 import com.creativehub.app.model.*
+import com.creativehub.app.ui.components.CommentsList
 import com.creativehub.app.ui.components.SocialBar
 import com.creativehub.app.ui.theme.Typography
 import com.creativehub.app.viewmodel.LocalUserState
@@ -188,36 +189,6 @@ fun ArtworkScreen(id: String) {
 			}
 			if(click.showComments){
 				CommentsList(listCommentInfo = artworkService.listCommentsUser)
-			}
-		}
-	}
-}
-
-@Composable
-fun CommentsList(listCommentInfo: SnapshotStateList<CommentInfo>) {
-	Column(
-		Modifier.padding(10.dp)
-	){
-		listCommentInfo.forEach { comment ->
-			Card(
-				backgroundColor = Color.LightGray,
-				modifier = Modifier
-					.padding(7.dp)
-			) {
-				Column(Modifier
-						   .fillMaxWidth()
-						   .padding(15.dp)){
-					Text(
-						text = "@${comment.user.nickname}",
-						fontWeight = FontWeight.Bold,
-						style = Typography.subtitle1
-					)
-					Text(
-						modifier = Modifier.padding(10.dp),
-						text = comment.comment.message,
-						style = Typography.subtitle1
-					)
-				}
 			}
 		}
 	}
