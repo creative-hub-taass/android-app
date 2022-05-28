@@ -40,13 +40,13 @@ fun CreativeHubNavHost(modifier: Modifier) {
 			}
 			composable(Destination.Profile.route) {
 				ProfileScreen()
+				//EventScreen("cc0a0c6e-866f-4d4c-a5f0-9205f9a0e977")
 			}
 			composable(Destination.Artwork.route, arguments = Destination.Artwork.arguments) {
 				ArtworkScreen((it.arguments?.getString("id") ?: "?"))
 			}
 			composable(Destination.Event.route, arguments = Destination.Event.arguments) {
-				// TODO
-				Text(text = Destination.Event.label + " " + (it.arguments?.getString("id") ?: "?"))
+				EventScreen((it.arguments?.getString("id") ?: "?"))
 			}
 			composable(Destination.Post.route, arguments = Destination.Post.arguments) {
 				PostScreen((it.arguments?.getString("id") ?: "?"))

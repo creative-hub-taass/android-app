@@ -3,6 +3,7 @@ package com.creativehub.app.viewmodel
 import androidx.compose.runtime.*
 import com.creativehub.app.api.*
 import com.creativehub.app.model.*
+import com.creativehub.app.util.fetchUsersOfComments
 import io.ktor.client.plugins.*
 import io.ktor.client.statement.*
 
@@ -20,7 +21,6 @@ class ArtworkStateViewModel : BusyViewModel() {
 		val result = APIClient.getArtwork(artworkId)
 		val comments = APIClient.getComments(artworkId).getOrNull()
 		val likes = APIClient.getLikes(artworkId).getOrNull()
-
 		artwork = result.getOrNull()
 		if (artwork != null) {
 			val list = (APIClient.getCreators(artwork!!.creations)).getOrNull()
@@ -32,9 +32,8 @@ class ArtworkStateViewModel : BusyViewModel() {
 				countLikes = mutableStateOf(likes)
 			}
 			listImages.addAll(artwork!!.images)
-			fetchUserofComments()
+			fetchUsersOfComments(listComments)
 		}
-
 		return@runBusy when (val exception = result.exceptionOrNull()) {
 			is ClientRequestException -> exception.response.bodyAsText()
 			is ServerResponseException -> "Server error"
@@ -43,7 +42,7 @@ class ArtworkStateViewModel : BusyViewModel() {
 		}
 	}
 
-	private suspend fun fetchUserofComments(): String? = runBusy {
+	/*private suspend fun fetchUserofComments(): String? = runBusy {
 		val listId = mutableStateListOf<String>()
 		listComments.forEach { comment ->
 			if (!listId.contains(comment.userId))
@@ -65,7 +64,7 @@ class ArtworkStateViewModel : BusyViewModel() {
 			null -> null
 			else -> exception.message
 		}
-	}
+	}*/
 
 	private fun clear() {
 		artwork = null

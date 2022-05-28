@@ -101,9 +101,11 @@ fun ArtworkScreen(id: String) {
 							)
 						}
 					}
-					Row(modifier = Modifier
-						.horizontalScroll(rememberScrollState())
-						.padding(top = 5.dp)) {
+					Row(
+						modifier = Modifier
+							.horizontalScroll(rememberScrollState())
+							.padding(top = 5.dp)
+					) {
 						artworkService.listUser.forEach { user ->
 							Text(
 								text = user.first.nickname,
