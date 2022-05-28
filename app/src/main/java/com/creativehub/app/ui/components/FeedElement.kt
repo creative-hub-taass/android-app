@@ -12,6 +12,6 @@ fun FeedElement(publicationInfo: PublicationInfo<*>) {
 	when (publicationInfo.publication) {
 		is Artwork -> ArtworkFeedElement(publicationInfo as PublicationInfo<Artwork>)
 		is Event -> EventFeedElement(publicationInfo as PublicationInfo<Event>)
-		is Post -> {}
+		is Post -> PostFeedElement(publicationInfo as PublicationInfo<Post>)
 	}
 }
