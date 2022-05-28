@@ -9,3 +9,8 @@ data class Comment(
 	val publicationId: String,
 	val message: String,
 )
+
+class CommentInfo(
+	val comment: Comment,
+	val user: PublicUser
+)

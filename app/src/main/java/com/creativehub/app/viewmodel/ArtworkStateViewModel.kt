@@ -1,7 +1,6 @@
 package com.creativehub.app.viewmodel
 
 import androidx.compose.runtime.*
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.creativehub.app.api.*
 import com.creativehub.app.model.*
 import io.ktor.client.plugins.*
@@ -14,6 +13,7 @@ class ArtworkStateViewModel : BusyViewModel() {
 	var listImages = mutableStateListOf<String>()
 	var listComments = mutableStateListOf<Comment>()
 	var countLikes = mutableStateOf<Int?>(null)
+	var listCommentsUser = mutableStateListOf<CommentInfo>()
 
 	suspend fun fetchArtwork(artworkId: String): String? = runBusy {
 		clear()
@@ -32,6 +32,35 @@ class ArtworkStateViewModel : BusyViewModel() {
 				countLikes = mutableStateOf(likes)
 			}
 			listImages.addAll(artwork!!.images)
+
+
+
+			fetchUserofComments()
+		}
+
+		return@runBusy when (val exception = result.exceptionOrNull()) {
+			is ClientRequestException -> exception.response.bodyAsText()
+			is ServerResponseException -> "Server error"
+			null -> null
+			else -> exception.message
+		}
+	}
+
+	private suspend fun fetchUserofComments(): String? = runBusy {
+		val listId = mutableStateListOf<String>()
+		listComments.forEach { comment ->
+			if(!listId.contains(comment.userId))
+				listId.add(comment.userId)
+		}
+		val result = APIClient.getListUsers(listId)
+		if(result.getOrNull() != null){
+			result.getOrNull()!!.forEach { publicUser ->
+				listComments.forEach { comment ->
+					if (publicUser.id.compareTo(comment.userId) == 0){
+						listCommentsUser.add(CommentInfo(comment, publicUser))
+					}
+				}
+			}
 		}
 		return@runBusy when (val exception = result.exceptionOrNull()) {
 			is ClientRequestException -> exception.response.bodyAsText()
@@ -41,13 +70,12 @@ class ArtworkStateViewModel : BusyViewModel() {
 		}
 	}
 
-
-
-	fun clear() {
+	private fun clear() {
 		artwork = null
 		listUser.clear()
 		listImages.clear()
 		listComments.clear()
+		listCommentsUser.clear()
 		countLikes = mutableStateOf<Int?>(null)
 	}
 }

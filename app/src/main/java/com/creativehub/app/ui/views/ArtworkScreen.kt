@@ -3,6 +3,7 @@ package com.creativehub.app.ui.views
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
@@ -10,12 +11,14 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.CalendarToday
 import androidx.compose.runtime.*
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -32,12 +35,21 @@ import com.creativehub.app.ui.components.SocialBar
 import com.creativehub.app.ui.theme.Typography
 import com.creativehub.app.viewmodel.LocalUserState
 
+
+class Click(bool: Boolean){
+	var showComments by mutableStateOf(bool)
+}
+
 @Composable
 fun ArtworkScreen(id: String) {
 	val vm = LocalUserState.current
 	val artworkService = LocalArtworkState.current
 	var liked: Boolean? = false
 	var authorFollowed: Boolean? = false
+	val click = remember {
+		Click(false)
+	}
+
 
 	LaunchedEffect(Unit, block = {
 		artworkService.fetchArtwork(id)
@@ -166,6 +178,46 @@ fun ArtworkScreen(id: String) {
 														 artworkService.listComments.size,
 														 authorFollowed)
 				SocialBar(info = tmpPublicationInfo)
+
+				ClickableText(
+					text = AnnotatedString("show comments"),
+					modifier = Modifier.align(Alignment.CenterHorizontally),
+					onClick = {
+						click.showComments = click.showComments.not()
+					})
+			}
+			if(click.showComments){
+				CommentsList(listCommentInfo = artworkService.listCommentsUser)
+			}
+		}
+	}
+}
+
+@Composable
+fun CommentsList(listCommentInfo: SnapshotStateList<CommentInfo>) {
+	Column(
+		Modifier.padding(10.dp)
+	){
+		listCommentInfo.forEach { comment ->
+			Card(
+				backgroundColor = Color.LightGray,
+				modifier = Modifier
+					.padding(7.dp)
+			) {
+				Column(Modifier
+						   .fillMaxWidth()
+						   .padding(15.dp)){
+					Text(
+						text = "@${comment.user.nickname}",
+						fontWeight = FontWeight.Bold,
+						style = Typography.subtitle1
+					)
+					Text(
+						modifier = Modifier.padding(10.dp),
+						text = comment.comment.message,
+						style = Typography.subtitle1
+					)
+				}
 			}
 		}
 	}
