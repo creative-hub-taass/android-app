@@ -88,10 +88,10 @@ fun EventScreen(id: String) {
 							.data(event.image)
 							.crossfade(true)
 							.build(),
-						placeholder = painterResource(R.drawable.placeholder),
 						contentDescription = "image",
 						contentScale = ContentScale.Crop,
-						modifier = Modifier.align(Alignment.CenterHorizontally)
+						modifier = Modifier.align(Alignment.CenterHorizontally),
+						error = painterResource(R.drawable.placeholder)
 					)
 					Row(
 						modifier = Modifier

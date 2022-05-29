@@ -95,9 +95,9 @@ fun ArtworkScreen(id: String) {
 									.data(image)
 									.crossfade(true)
 									.build(),
-								placeholder = painterResource(R.drawable.placeholder),
 								contentDescription = "image",
-								contentScale = ContentScale.Crop
+								contentScale = ContentScale.Crop,
+								error = painterResource(R.drawable.placeholder)
 							)
 						}
 					}
