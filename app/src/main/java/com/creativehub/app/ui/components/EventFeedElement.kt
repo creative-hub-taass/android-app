@@ -40,8 +40,7 @@ fun EventFeedElement(info: PublicationInfo<Event>) {
 	val indication = LocalIndication.current
 	val navigation = LocalNavigationState.current
 	val context = LocalContext.current
-	val locale = context.resources.configuration.locales[0]
-	val dates = event.formatDates(locale)
+	val dates = event.formatDates(R.string.interval_dates)
 	Box(modifier = Modifier
 		.fillMaxWidth()
 		.padding(2.dp, 4.dp)) {

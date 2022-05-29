@@ -11,6 +11,8 @@ import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.CalendarToday
+import androidx.compose.material.icons.rounded.LocalAtm
+import androidx.compose.material.icons.rounded.Sell
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -22,7 +24,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -61,9 +62,15 @@ fun ArtworkScreen(id: String) {
 				.fillMaxSize()
 				.verticalScroll(rememberScrollState())
 				.background(MaterialTheme.colors.surface)
+				.padding(bottom = 16.dp)
 		) {
 			CreatorsList(artworkState.creatorsInfo)
 			if (artwork != null) {
+				Text(
+					text = artwork.name.trim(),
+					modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
+					style = Typography.h6
+				)
 				val images = artwork.images
 				HorizontalPager(
 					count = images.size,
@@ -85,57 +92,79 @@ fun ArtworkScreen(id: String) {
 				}
 				SocialBar(info = artworkState.publicationInfo)
 				Text(
-					text = artwork.name.trim(),
-					modifier = Modifier.padding(8.dp),
-					fontWeight = FontWeight.Bold
-				)
-				Text(
 					text = artwork.description,
-					fontWeight = FontWeight.Bold,
 					modifier = Modifier.padding(8.dp),
-					style = Typography.subtitle1
+					style = Typography.body1
 				)
-				Row {
-					val date = artwork.creationDateTime.toLocalDateTime(TimeZone.currentSystemDefault())
-						.toJavaLocalDateTime().format(
-							DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM))
+				Row(
+					verticalAlignment = Alignment.CenterVertically,
+				) {
+					val date = artwork.creationDateTime
+						.toLocalDateTime(TimeZone.currentSystemDefault())
+						.toJavaLocalDateTime()
+						.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT))
 					Icon(
 						imageVector = Icons.Rounded.CalendarToday,
 						contentDescription = "Icon",
-						modifier = Modifier.padding(8.dp),
+						modifier = Modifier
+							.padding(8.dp)
+							.height(24.dp),
 						tint = Color.Gray
 					)
 					Text(
-						text = date,
-						modifier = Modifier.padding(0.dp, 8.dp),
-						fontWeight = FontWeight.Bold
+						text = date
 					)
 				}
 				if (artwork.onSale) {
-					val price = artwork.price?.toCurrencyString(LocalContext.current.resources.configuration.locales[0])
-					val currency = artwork.currency?.symbol
-					Text(
-						modifier = Modifier.padding(8.dp, 0.dp),
-						text = "Price: $currency $price",
-						fontWeight = FontWeight.Bold,
-						style = Typography.subtitle1
-					)
-					Text(
-						modifier = Modifier.padding(8.dp, 0.dp),
-						text = LocalContext.current.resources.getQuantityString(R.plurals.available_copies,
-																				artwork.availableCopies),
-						fontWeight = FontWeight.Bold,
-						style = Typography.subtitle1
-					)
+					Row(
+						verticalAlignment = Alignment.CenterVertically
+					) {
+						val price = artwork.price?.toCurrencyString()
+						val currency = artwork.currency?.symbol
+						Icon(
+							imageVector = Icons.Rounded.LocalAtm,
+							contentDescription = "Icon",
+							modifier = Modifier
+								.padding(8.dp)
+								.height(24.dp),
+							tint = Color.Gray
+						)
+						Text(
+							text = "Price: $currency $price"
+						)
+					}
+					Row(
+						verticalAlignment = Alignment.CenterVertically
+					) {
+						Icon(
+							imageVector = Icons.Rounded.Sell,
+							contentDescription = "Icon",
+							modifier = Modifier
+								.padding(8.dp, 0.dp)
+								.height(24.dp),
+							tint = Color.Gray
+						)
+						Text(
+							text = LocalContext.current.resources.getQuantityString(R.plurals.available_copies,
+																					artwork.availableCopies),
+						)
+					}
 				}
-				OutlinedButton(
-					modifier = Modifier.align(Alignment.CenterHorizontally),
-					onClick = { showComments = !showComments },
+				Spacer(modifier = Modifier.height(8.dp))
+				AnimatedVisibility(
+					visible = !artworkState.commentInfos.isNullOrEmpty(),
+					modifier = Modifier.fillMaxWidth(),
 				) {
-					Text(if (showComments) "Hide comments" else "Show comments")
-				}
-				AnimatedVisibility(showComments) {
-					CommentsList(artworkState.commentInfos ?: emptyList())
+					Column(
+						horizontalAlignment = Alignment.CenterHorizontally
+					) {
+						OutlinedButton(onClick = { showComments = !showComments }) {
+							Text(if (showComments) "Hide comments" else "Show comments")
+						}
+						AnimatedVisibility(showComments) {
+							CommentsList(artworkState.commentInfos ?: emptyList())
+						}
+					}
 				}
 			}
 		}

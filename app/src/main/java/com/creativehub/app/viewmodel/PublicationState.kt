@@ -17,7 +17,6 @@ abstract class PublicationState<T : Publication>(id: String, user: User?) : Reme
 	var likes by mutableStateOf<Int?>(null)
 	var userLiked by mutableStateOf<Boolean?>(null)
 	var comments by mutableStateOf<List<Comment>?>(null)
-	var commentsCount by mutableStateOf<Int?>(null)
 	var commentInfos by mutableStateOf<List<CommentInfo>?>(null)
 	val publicationInfo: PublicationInfo<T>
 		get() = PublicationInfo(
@@ -26,7 +25,7 @@ abstract class PublicationState<T : Publication>(id: String, user: User?) : Reme
 			likes,
 			userLiked,
 			comments,
-			commentsCount
+			comments?.size
 		)
 
 	abstract suspend fun fetchPublication(id: String, user: User?)
@@ -43,7 +42,7 @@ abstract class PublicationState<T : Publication>(id: String, user: User?) : Reme
 		}
 	}
 
-	protected suspend fun fetchUsersOfComments(): List<CommentInfo>? {
+	private suspend fun fetchUsersOfComments(): List<CommentInfo>? {
 		val users = comments?.mapTo(mutableSetOf()) { it.userId } ?: emptySet()
 		val result = APIClient.getListUsers(users.toList()).getOrDefault(emptyList())
 		return comments?.mapNotNull { comment ->
@@ -62,7 +61,6 @@ abstract class PublicationState<T : Publication>(id: String, user: User?) : Reme
 		likes = null
 		userLiked = null
 		comments = null
-		commentsCount = null
 		commentInfos = null
 	}
 

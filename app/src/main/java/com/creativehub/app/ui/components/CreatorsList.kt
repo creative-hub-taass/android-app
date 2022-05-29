@@ -31,6 +31,7 @@ import com.creativehub.app.ui.LocalNavigationState
 import com.creativehub.app.ui.navigation.Destination
 import com.creativehub.app.ui.theme.Shapes
 import com.creativehub.app.ui.theme.Typography
+import com.creativehub.app.util.getPreviewCreations
 import com.google.accompanist.placeholder.PlaceholderHighlight
 import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.material.shimmer
@@ -43,7 +44,7 @@ fun CreatorsList(creators: List<Pair<PublicUser, CreationType>>?) {
 	Column(
 		modifier = Modifier
 			.padding(8.dp)
-			.heightIn(min = 36.dp)
+			.heightIn(min = 32.dp)
 			.fillMaxWidth()
 			.placeholder(
 				visible = creators == null,
@@ -55,7 +56,9 @@ fun CreatorsList(creators: List<Pair<PublicUser, CreationType>>?) {
 	) {
 		creators?.forEach { (creator, type) ->
 			Row(
-				modifier = Modifier.padding(bottom = 4.dp),
+				modifier = Modifier
+					.padding(bottom = 4.dp)
+					.clickable { navigation.navigate(Destination.Creator.argRoute(creator.id)) },
 				horizontalArrangement = Arrangement.Start,
 				verticalAlignment = Alignment.CenterVertically
 			) {
@@ -68,25 +71,28 @@ fun CreatorsList(creators: List<Pair<PublicUser, CreationType>>?) {
 					modifier = Modifier
 						.size(32.dp)
 						.border(1.dp, Color.Gray.copy(alpha = 0.5f), CircleShape)
-						.clip(CircleShape)
-						.clickable { navigation.navigate(Destination.Creator.argRoute(creator.id)) },
+						.clip(CircleShape),
 					contentScale = ContentScale.Crop
 				)
-				Text(
-					text = creator.nickname,
-					modifier = Modifier
-						.padding(start = 8.dp)
-						.clickable { navigation.navigate(Destination.Creator.argRoute(creator.id)) },
-					style = Typography.body1,
-					fontWeight = FontWeight.Bold
-				)
+				Column {
+					Text(
+						text = creator.nickname,
+						modifier = Modifier.padding(start = 8.dp),
+						style = Typography.body1,
+						fontWeight = FontWeight.Bold
+					)
+					Text(
+						text = "@${creator.username}",
+						modifier = Modifier.padding(start = 8.dp),
+						style = Typography.caption,
+					)
+				}
 				Text(
 					modifier = Modifier
 						.padding(start = 8.dp, top = 1.dp)
 						.alpha(0.6f)
 						.border(1.dp, MaterialTheme.colors.onBackground, Shapes.small)
-						.padding(4.dp, 2.dp)
-						.clickable { navigation.navigate(Destination.Creator.argRoute(creator.id)) },
+						.padding(4.dp, 2.dp),
 					text = type.name.toUpperCase(LocaleList.current),
 					style = Typography.caption,
 				)
@@ -99,6 +105,6 @@ fun CreatorsList(creators: List<Pair<PublicUser, CreationType>>?) {
 @Composable
 fun CreatorsListPreview() {
 	CompositionLocalProvider(LocalNavigationState provides rememberNavController()) {
-		CreatorsList(null)//getPreviewCreations())
+		CreatorsList(getPreviewCreations())
 	}
 }
