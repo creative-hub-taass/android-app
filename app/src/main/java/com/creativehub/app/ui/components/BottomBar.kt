@@ -1,9 +1,6 @@
 package com.creativehub.app.ui.components
 
-import androidx.compose.material.BottomNavigation
-import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.creativehub.app.ui.LocalNavigationState
@@ -15,7 +12,10 @@ fun BottomBar() {
 	val backstackEntry = navigation.currentBackStackEntryAsState()
 	val currentScreen = backstackEntry.value?.destination?.route
 	if (currentScreen?.contains(Home.route) == true) {
-		BottomNavigation {
+		BottomNavigation(
+			backgroundColor = MaterialTheme.colors.secondaryVariant,
+			contentColor = MaterialTheme.colors.onSecondary,
+		) {
 			for (item in listOf(Feed, Events, Profile)) {
 				BottomNavigationItem(
 					selected = currentScreen == item.route,

@@ -22,6 +22,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import com.creativehub.app.R
 import com.creativehub.app.ui.LocalNavigationState
 import com.creativehub.app.ui.components.autofill
+import com.creativehub.app.ui.navigation.Destination
 import com.creativehub.app.ui.navigation.Destination.Feed
 import com.creativehub.app.ui.navigation.Destination.Login
 import com.creativehub.app.ui.theme.CreativeHubTheme
@@ -33,11 +34,21 @@ import com.creativehub.app.viewmodel.UserStateViewModel
 fun RegisterScreen(
 	onRegisterClick: (nickname: String, email: String, password: String) -> Unit,
 ) {
-	val vm = LocalUserState.current
+	val userState = LocalUserState.current
 	val navigation = LocalNavigationState.current
+	if (userState.isLoggedIn) {
+		LaunchedEffect(key1 = Unit) {
+			navigation.navigate(route = Destination.Feed.route) {
+				popUpTo(route = Destination.Register.route) {
+					inclusive = true
+				}
+			}
+		}
+		return
+	}
 	ConstraintLayout(Modifier.fillMaxSize()) {
 		val (card, skipBtn, loader) = createRefs()
-		if (vm.isBusy) {
+		if (userState.isBusy) {
 			CircularProgressIndicator(modifier = Modifier.constrainAs(loader) { centerTo(parent) })
 		} else {
 			RegisterCard(Modifier.constrainAs(card) { centerTo(parent) },

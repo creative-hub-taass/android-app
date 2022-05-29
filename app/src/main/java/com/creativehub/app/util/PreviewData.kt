@@ -7,26 +7,19 @@ import java.util.*
 
 fun getPreviewArtwork(): PublicationInfo<Artwork> {
 	val id = UUID.randomUUID().toString()
-	val user1 = getPreviewCreator()
-	val user2 = getPreviewCreator()
+	val creations = getPreviewCreations()
 	val artwork = Artwork(
 		id = id,
 		timestamp = Clock.System.now(),
 		lastUpdate = Clock.System.now(),
-		creations = listOf(
+		creations = creations.map {
 			ArtworkCreation(
 				id = UUID.randomUUID().toString(),
-				user = user1.id,
-				creationType = CreationType.AUTHOR,
-				artworkId = id
-			),
-			ArtworkCreation(
-				id = UUID.randomUUID().toString(),
-				user = user2.id,
-				creationType = CreationType.AUTHOR,
+				user = it.first.id,
+				creationType = it.second,
 				artworkId = id
 			)
-		),
+		},
 		creationDateTime = Instant.parse("1927-01-01T00:00:00+00:00"),
 		name = "Early Canvas Model B3 \"Wassily\" Chair, Black Eisengarn",
 		description = "Chromium-plated tubular steel and original Eisengarn canvas",
@@ -42,7 +35,7 @@ fun getPreviewArtwork(): PublicationInfo<Artwork> {
 		paymentEmail = "pay@creativehub.com",
 		availableCopies = 1
 	)
-	val creators = listOf(user1, user2)
+	val creators = creations.map { it.first }
 	val likes = 15
 	val comments = getPreviewComments(id)
 	val commentsCount = comments.size
@@ -51,26 +44,19 @@ fun getPreviewArtwork(): PublicationInfo<Artwork> {
 
 fun getPreviewEvent(): PublicationInfo<Event> {
 	val id = UUID.randomUUID().toString()
-	val user1 = getPreviewCreator()
-	val user2 = getPreviewCreator()
+	val creations = getPreviewCreations()
 	val event = Event(
 		id = id,
 		timestamp = Clock.System.now(),
 		lastUpdate = Clock.System.now(),
-		creations = listOf(
+		creations = creations.map {
 			EventCreation(
 				id = UUID.randomUUID().toString(),
-				user = user1.id,
-				creationType = CreationType.AUTHOR,
-				eventId = id
-			),
-			EventCreation(
-				id = UUID.randomUUID().toString(),
-				user = user2.id,
-				creationType = CreationType.AUTHOR,
+				user = it.first.id,
+				creationType = it.second,
 				eventId = id
 			)
-		),
+		},
 		startDateTime = Instant.parse("2022-05-05T12:00:00+00:00"),
 		endDateTime = Instant.parse("2022-05-28T12:00:00+00:00"),
 		name = "Eric Zener - Rising",
@@ -80,7 +66,7 @@ fun getPreviewEvent(): PublicationInfo<Event> {
 		coordinates = Event.Coordinates(40.750118, -74.005277),
 		bookingURL = "https://www.artsy.net/show/gallery-henoch-eric-zener-rising",
 	)
-	val creators = listOf(user1, user2)
+	val creators = creations.map { it.first }
 	val likes = 15
 	val comments = getPreviewComments(id)
 	val commentsCount = comments.size
@@ -89,40 +75,38 @@ fun getPreviewEvent(): PublicationInfo<Event> {
 
 fun getPreviewPost(): PublicationInfo<Post> {
 	val id = UUID.randomUUID().toString()
-	val user1 = getPreviewCreator()
-	val user2 = getPreviewCreator()
+	val creations = getPreviewCreations()
 	val post = Post(
 		id = id,
 		timestamp = Clock.System.now(),
 		lastUpdate = Clock.System.now(),
-		creations = listOf(
+		creations = creations.map {
 			PostCreation(
 				id = UUID.randomUUID().toString(),
-				user = user1.id,
-				creationType = CreationType.AUTHOR,
-				postId = id
-			),
-			PostCreation(
-				id = UUID.randomUUID().toString(),
-				user = user2.id,
-				creationType = CreationType.AUTHOR,
+				user = it.first.id,
+				creationType = it.second,
 				postId = id
 			)
-		),
+		},
 		title = "Lorem ipsum dolor sit amet",
 		body = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur sagittis ipsum ultricies dolor mollis, id interdum lorem euismod. Morbi sit amet urna felis. Donec rhoncus tempor ligula vel tincidunt. Vestibulum congue urna a est tempor semper vel quis diam. Nullam vitae est at risus placerat porta at dictum turpis. Morbi volutpat sem ante, non ornare massa tincidunt nec. Phasellus egestas neque et justo venenatis, id varius turpis consequat. Nullam interdum porttitor dapibus. Donec congue ante et risus hendrerit tincidunt.\nQuisque semper tempor arcu, nec dictum neque egestas vel. Sed ultricies massa nisl, et porta mi ultricies vel. In elementum diam porttitor tincidunt gravida. Ut nisl metus, porttitor nec lorem in, porta aliquam tellus. Suspendisse ipsum felis, porttitor sit amet orci eu, dictum pretium dolor. Donec euismod, nisi eget mattis venenatis, diam elit placerat nulla, eu hendrerit felis nisi id risus. Quisque mollis ut lacus vitae dapibus. Vivamus sed elit arcu. Aliquam erat volutpat. Maecenas pulvinar feugiat eros at tristique. Aliquam auctor iaculis facilisis. Nulla facilisi. Quisque bibendum enim in sapien sodales lobortis. Nullam sagittis ligula id risus posuere ultrices. Curabitur molestie cursus justo, non condimentum mauris bibendum in. Pellentesque molestie, ex ut ornare viverra, est felis venenatis ex, sit amet tempor justo ex at nunc.\nDonec accumsan orci quis tristique finibus. Nullam quis sagittis mi. Suspendisse id tortor at lorem efficitur vehicula. Vivamus est arcu, posuere quis pellentesque non, placerat eget ligula. Mauris ut venenatis augue. Fusce tincidunt id sem eu porta. Proin sodales sapien eget vulputate euismod. Praesent tincidunt urna pulvinar, auctor diam quis, sagittis tortor. Ut dignissim iaculis vestibulum. Praesent id tortor tempor, lacinia nisl nec, dignissim leo. Suspendisse potenti. Etiam facilisis, metus nec consequat pulvinar, orci nunc sollicitudin lectus, eu vestibulum eros urna vitae nunc. Fusce in pharetra felis. Etiam vel arcu et est vestibulum finibus. Fusce risus lectus, blandit ut lectus vel, volutpat sodales nibh.",
 	)
-	val creators = listOf(user1, user2)
+	val creators = creations.map { it.first }
 	val likes = 15
 	val comments = getPreviewComments(id)
 	val commentsCount = comments.size
 	return PublicationInfo(post, creators, likes, false, comments, commentsCount)
 }
 
-private fun getPreviewComments(publicationId: String) = listOf(
+fun getPreviewComments(publicationId: String) = listOf(
 	Comment(UUID.randomUUID().toString(), UUID.randomUUID().toString(), publicationId, "Test comment"),
 	Comment(UUID.randomUUID().toString(), UUID.randomUUID().toString(), publicationId, "Lorem ipsum dolor sit amet."),
 	Comment(UUID.randomUUID().toString(), UUID.randomUUID().toString(), publicationId, "Test unicode \uD83D\uDC4D")
+)
+
+fun getPreviewCreations(): List<Pair<PublicUser, CreationType>> = listOf(
+	getPreviewCreator() to CreationType.AUTHOR,
+	getPreviewCreator() to CreationType.COAUTHOR
 )
 
 fun getPreviewCreator() = PublicUser(

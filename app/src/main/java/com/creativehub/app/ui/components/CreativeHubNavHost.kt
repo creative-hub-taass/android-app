@@ -19,12 +19,12 @@ import kotlinx.coroutines.launch
 @Composable
 fun CreativeHubNavHost(modifier: Modifier) {
 	val context = LocalContext.current
-	val vm = LocalUserState.current
+	val userState = LocalUserState.current
 	val navigation = LocalNavigationState.current
 	val startDestination = Destination.getStartDestination()
 	val coroutineScope = rememberCoroutineScope()
 	LaunchedEffect(Unit) {
-		vm.tryGoogleAutoSignIn(context)
+		userState.tryGoogleAutoSignIn(context)
 	}
 	NavHost(
 		navController = navigation,
@@ -43,13 +43,13 @@ fun CreativeHubNavHost(modifier: Modifier) {
 				//EventScreen("cc0a0c6e-866f-4d4c-a5f0-9205f9a0e977")
 			}
 			composable(Destination.Artwork.route, arguments = Destination.Artwork.arguments) {
-				ArtworkScreen((it.arguments?.getString("id") ?: "?"))
+				ArtworkScreen(it.arguments?.getString("id") ?: "")
 			}
 			composable(Destination.Event.route, arguments = Destination.Event.arguments) {
 				EventScreen((it.arguments?.getString("id") ?: "?"))
 			}
 			composable(Destination.Post.route, arguments = Destination.Post.arguments) {
-				PostScreen((it.arguments?.getString("id") ?: "?"))
+				PostScreen(it.arguments?.getString("id") ?: "")
 			}
 			composable(Destination.Creator.route, arguments = Destination.Creator.arguments) {
 				// TODO
@@ -57,20 +57,10 @@ fun CreativeHubNavHost(modifier: Modifier) {
 			}
 		}
 		composable(Destination.Login.route) {
-			if (vm.isLoggedIn) {
-				LaunchedEffect(key1 = Unit) {
-					navigation.navigate(route = Destination.Feed.route) {
-						popUpTo(route = Destination.Login.route) {
-							inclusive = true
-						}
-					}
-				}
-				return@composable
-			}
 			LoginScreen(
 				{ email, password ->
 					coroutineScope.launch {
-						val result = vm.login(email, password)
+						val result = userState.login(email, password)
 						if (result != null) {
 							Toast.makeText(context, result, Toast.LENGTH_SHORT).show()
 						}
@@ -78,7 +68,7 @@ fun CreativeHubNavHost(modifier: Modifier) {
 				},
 				{ email, nickname, token ->
 					coroutineScope.launch {
-						val result = vm.socialLogin(email, nickname, token)
+						val result = userState.socialLogin(email, nickname, token)
 						if (result != null) {
 							Toast.makeText(context, result, Toast.LENGTH_SHORT).show()
 						}
@@ -87,19 +77,9 @@ fun CreativeHubNavHost(modifier: Modifier) {
 			)
 		}
 		composable(Destination.Register.route) {
-			if (vm.isLoggedIn) {
-				LaunchedEffect(key1 = Unit) {
-					navigation.navigate(route = Destination.Feed.route) {
-						popUpTo(route = Destination.Register.route) {
-							inclusive = true
-						}
-					}
-				}
-				return@composable
-			}
 			RegisterScreen { nickname, email, password ->
 				coroutineScope.launch {
-					val result = vm.register(nickname, email, password)
+					val result = userState.register(nickname, email, password)
 					val message =
 						result ?: "Registration successful.\nWe have sent you an e-mail with a confirmation link."
 					Toast.makeText(context, message, Toast.LENGTH_SHORT).show()

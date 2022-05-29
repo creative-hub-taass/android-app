@@ -13,15 +13,15 @@ import com.creativehub.app.viewmodel.LocalUserState
 @Composable
 fun ProfileScreen() {
 	// TODO
-	val vm = LocalUserState.current
+	val userState = LocalUserState.current
 	Column(Modifier.fillMaxSize(),
 		   verticalArrangement = Arrangement.Center,
 		   horizontalAlignment = Alignment.CenterHorizontally
 	) {
-		if (vm.isBusy) {
+		if (userState.isBusy) {
 			CircularProgressIndicator()
 		} else {
-			Text("Hello ${vm.user?.nickname ?: "guest"}!")
+			Text("Hello ${userState.user?.nickname ?: "guest"}!")
 		}
 	}
 }

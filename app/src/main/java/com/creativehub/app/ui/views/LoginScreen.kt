@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -12,6 +13,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import com.creativehub.app.R
 import com.creativehub.app.ui.LocalNavigationState
 import com.creativehub.app.ui.components.LoginCard
+import com.creativehub.app.ui.navigation.Destination
 import com.creativehub.app.ui.navigation.Destination.Feed
 import com.creativehub.app.ui.theme.CreativeHubTheme
 import com.creativehub.app.ui.theme.Typography
@@ -23,11 +25,21 @@ fun LoginScreen(
 	onLoginClick: (email: String, password: String) -> Unit,
 	onSocialLoginClick: (email: String, nickname: String, token: String) -> Unit,
 ) {
-	val vm = LocalUserState.current
+	val userState = LocalUserState.current
 	val navigation = LocalNavigationState.current
+	if (userState.isLoggedIn) {
+		LaunchedEffect(key1 = Unit) {
+			navigation.navigate(route = Feed.route) {
+				popUpTo(route = Destination.Login.route) {
+					inclusive = true
+				}
+			}
+		}
+		return
+	}
 	ConstraintLayout(Modifier.fillMaxSize()) {
 		val (loginCard, skipBtn, loader) = createRefs()
-		if (vm.isBusy) {
+		if (userState.isBusy) {
 			CircularProgressIndicator(modifier = Modifier.constrainAs(loader) { centerTo(parent) })
 		} else {
 			LoginCard(Modifier.constrainAs(loginCard) { centerTo(parent) },

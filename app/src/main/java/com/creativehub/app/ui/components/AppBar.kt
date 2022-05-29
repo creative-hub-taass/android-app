@@ -1,9 +1,7 @@
 package com.creativehub.app.ui.components
 
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.runtime.Composable
@@ -18,7 +16,7 @@ import com.creativehub.app.viewmodel.LocalUserState
 
 @Composable
 fun AppBar() {
-	val vm = LocalUserState.current
+	val userState = LocalUserState.current
 	val context = LocalContext.current
 	val navigation = LocalNavigationState.current
 	val backstackEntry = navigation.currentBackStackEntryAsState()
@@ -34,21 +32,24 @@ fun AppBar() {
 				})
 			},
 			actions = {
-				if (vm.isLoggedIn) {
+				AnimatedVisibility(userState.isLoggedIn) {
 					IconButton(onClick = {
-						vm.logout(context)
+						userState.logout(context)
 						navigation.navigate(Destination.Login.route)
 					}) {
 						Icon(Icons.Filled.Logout, "Logout")
 					}
-				} else {
+				}
+				AnimatedVisibility(!userState.isLoggedIn) {
 					IconButton(onClick = {
 						navigation.navigate(Destination.Login.route)
 					}) {
 						Text("Login")
 					}
 				}
-			}
+			},
+			backgroundColor = MaterialTheme.colors.secondaryVariant,
+			contentColor = MaterialTheme.colors.onSecondary,
 		)
 	}
 }

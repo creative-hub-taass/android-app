@@ -2,7 +2,11 @@ package com.creativehub.app.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Primary200 = Color(0xff757de8)
-val Primary500 = Color(0xff3f51b5)
-val Primary700 = Color(0xff002984)
-val Secondary200 = Color(0xffffab91)
+val primaryColor = Color(0xfff5f5f5)
+val primaryLightColor = Color(0xffffffff)
+val primaryDarkColor = Color(0xffc2c2c2)
+val secondaryColor = Color(0xff212121)
+val secondaryLightColor = Color(0xff484848)
+val secondaryDarkColor = Color(0xff000000)
+val primaryTextColor = Color(0xff000000)
+val secondaryTextColor = Color(0xffffffff)

@@ -8,12 +8,11 @@ import io.ktor.client.plugins.*
 import io.ktor.client.statement.*
 
 
-
 class PostStateViewModel : BusyViewModel() {
 	var post by mutableStateOf<Post?>(null)
 	var listUser = mutableStateListOf<Pair<PublicUser, CreationType>>()
 	var listComments = mutableStateListOf<Comment>()
-	var countLikes = mutableStateOf<Int?>(null)
+	var countLikes by mutableStateOf<Int?>(null)
 	var listCommentsUser = mutableStateListOf<CommentInfo>()
 
 	suspend fun fetchPost(postId: String): String? = runBusy {
@@ -24,11 +23,11 @@ class PostStateViewModel : BusyViewModel() {
 		post = result.getOrNull()
 		if (post != null) {
 			val list = (APIClient.getCreators(post!!.creations)).getOrNull()
-			if(list != null)
+			if (list != null)
 				listUser.addAll(list)
-			if(comments != null && likes != null) {
+			if (comments != null && likes != null) {
 				listComments.addAll(comments)
-				countLikes = mutableStateOf(likes)
+				countLikes = likes
 			}
 			fetchUsersOfComments(listComments)
 		}
@@ -45,7 +44,7 @@ class PostStateViewModel : BusyViewModel() {
 		listUser.clear()
 		listComments.clear()
 		listCommentsUser.clear()
-		countLikes = mutableStateOf(null)
+		countLikes = null
 	}
 }
 

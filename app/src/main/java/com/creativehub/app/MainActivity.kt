@@ -14,7 +14,6 @@ import com.creativehub.app.viewmodel.*
 class MainActivity : ComponentActivity() {
 	private val userState by viewModels<UserStateViewModel>()
 	private val feedState by viewModels<FeedStateViewModel>()
-	private val artworkState by viewModels<ArtworkStateViewModel>()
 	private val postState by viewModels<PostStateViewModel>()
 	private val eventState by viewModels<EventStateViewModel>()
 
@@ -28,7 +27,7 @@ class MainActivity : ComponentActivity() {
 				LocalUserState provides userState,
 				LocalFeedState provides feedState,
 				LocalNavigationState provides rememberNavController(),
-				LocalArtworkState provides artworkState,
+				LocalPostState provides postState,
 				LocalPostState provides postState,
 				LocalEventState provides eventState,
 			) {

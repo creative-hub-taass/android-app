@@ -10,6 +10,7 @@ import com.creativehub.app.model.Event
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toLocalDateTime
+import java.text.DecimalFormat
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.*
@@ -46,4 +47,8 @@ suspend fun fetchUsersOfComments(listComments: SnapshotStateList<Comment>): Snap
 		}
 	}
 	return listCommentsUser
+}
+
+fun Double.toCurrencyString(locale: Locale): String {
+	return DecimalFormat.getCurrencyInstance(locale).format(this)
 }
