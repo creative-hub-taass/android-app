@@ -41,7 +41,6 @@ fun SocialBar(info: PublicationInfo<*>) {
 		is Artwork -> Destination.Artwork
 		is Event -> Destination.Event
 		is Post -> Destination.Post
-		else -> Destination.Artwork
 	}
 	val shareIntent = Intent.createChooser(Intent().apply {
 		action = Intent.ACTION_SEND

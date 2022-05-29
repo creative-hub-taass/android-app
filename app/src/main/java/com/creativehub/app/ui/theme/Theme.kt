@@ -6,6 +6,8 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 @SuppressLint("ConflictingOnColor")
 private val LightThemeColors = lightColors(
@@ -22,7 +24,7 @@ private val DarkThemeColors = darkColors(
 	primary = primaryColor,
 	primaryVariant = primaryLightColor,
 	secondary = secondaryColor,
-	secondaryVariant = secondaryLightColor,
+	secondaryVariant = secondaryDarkColor,
 	onPrimary = primaryTextColor,
 	onSecondary = secondaryTextColor,
 )
@@ -40,4 +42,12 @@ fun CreativeHubTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Compo
 		shapes = Shapes,
 		content = content
 	)
+	val systemUiController = rememberSystemUiController()
+	SideEffect {
+		// Update all of the system bar colors to be transparent, and use
+		// dark icons if we're in light theme
+		systemUiController.setSystemBarsColor(
+			color = colors.secondaryVariant
+		)
+	}
 }
