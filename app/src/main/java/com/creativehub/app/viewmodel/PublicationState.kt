@@ -1,8 +1,7 @@
 package com.creativehub.app.viewmodel
 
 import androidx.compose.runtime.*
-import com.creativehub.app.api.APIClient
-import com.creativehub.app.api.getListUsers
+import com.creativehub.app.api.*
 import com.creativehub.app.model.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
@@ -31,6 +30,18 @@ abstract class PublicationState<T : Publication>(id: String, user: User?) : Reme
 		)
 
 	abstract suspend fun fetchPublication(id: String, user: User?)
+
+	protected suspend fun getPublicationInfo(id: String, user: User?) {
+		if (publication != null) {
+			this.creatorsInfo = APIClient.getCreators(publication!!.creations).getOrNull()
+			this.likes = APIClient.getLikes(id).getOrNull()
+			if (user != null) {
+				this.userLiked = APIClient.getUserLikedPublication(id, user.id).getOrDefault(false)
+			}
+			this.comments = APIClient.getComments(id).getOrNull()
+			commentInfos = fetchUsersOfComments()
+		}
+	}
 
 	protected suspend fun fetchUsersOfComments(): List<CommentInfo>? {
 		val users = comments?.mapTo(mutableSetOf()) { it.userId } ?: emptySet()

@@ -2,23 +2,15 @@ package com.creativehub.app.viewmodel
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import com.creativehub.app.api.*
+import com.creativehub.app.api.APIClient
+import com.creativehub.app.api.getArtwork
 import com.creativehub.app.model.Artwork
 import com.creativehub.app.model.User
 
 class ArtworkState(id: String, user: User?) : PublicationState<Artwork>(id, user) {
 	override suspend fun fetchPublication(id: String, user: User?) {
-		val result = APIClient.getArtwork(id)
-		publication = result.getOrNull()
-		if (publication != null) {
-			this.creatorsInfo = APIClient.getCreators(publication!!.creations).getOrNull()
-			this.likes = APIClient.getLikes(id).getOrNull()
-			if (user != null) {
-				this.userLiked = APIClient.getUserLikedPublication(id, user.id).getOrDefault(false)
-			}
-			this.comments = APIClient.getComments(id).getOrNull()
-			commentInfos = fetchUsersOfComments()
-		}
+		publication = APIClient.getArtwork(id).getOrNull()
+		getPublicationInfo(id, user)
 	}
 }
 

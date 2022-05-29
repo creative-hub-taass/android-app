@@ -12,40 +12,30 @@ import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.creativehub.app.api.APIClient
-import com.creativehub.app.api.getUserLikedPublication
-import com.creativehub.app.model.PublicationInfo
 import com.creativehub.app.ui.components.CommentsList
 import com.creativehub.app.ui.components.CreatorsList
 import com.creativehub.app.ui.components.SocialBar
-import com.creativehub.app.viewmodel.LocalPostState
 import com.creativehub.app.viewmodel.LocalUserState
-
+import com.creativehub.app.viewmodel.rememberPostState
 
 @Composable
 fun PostScreen(id: String) {
 	val userState = LocalUserState.current
 	val user = userState.user
-	val postService = LocalPostState.current
-	val post = postService.post
-	var liked by rememberSaveable { mutableStateOf(false) }
+	val postState = rememberPostState(id, user)
+	val post = postState.publication
 	var showComments by rememberSaveable { mutableStateOf(false) }
-
-	LaunchedEffect(Unit) {
-		postService.fetchPost(id)
-		if (user != null) {
-			liked = APIClient.getUserLikedPublication(id, user.id).getOrDefault(false)
-		}
-	}
-
 	if (post == null) {
 		CircularProgressIndicator(
 			modifier = Modifier
@@ -60,7 +50,7 @@ fun PostScreen(id: String) {
 				.fillMaxWidth()
 				.verticalScroll(rememberScrollState())
 		) {
-			CreatorsList(postService.listUser)
+			CreatorsList(postState.creatorsInfo)
 			Card(
 				border = BorderStroke(2.dp, Color.Black),
 				backgroundColor = Color.LightGray,
@@ -87,14 +77,7 @@ fun PostScreen(id: String) {
 					)
 				}
 			}
-			val tmpPublicationInfo = PublicationInfo(post,
-													 postService.listUser.map { it.first },
-													 postService.countLikes,
-													 liked,
-													 postService.listComments,
-													 postService.listComments.size,
-													 null)
-			SocialBar(info = tmpPublicationInfo)
+			SocialBar(info = postState.publicationInfo)
 			OutlinedButton(
 				modifier = Modifier.align(Alignment.CenterHorizontally),
 				onClick = { showComments = !showComments },
@@ -102,7 +85,7 @@ fun PostScreen(id: String) {
 				Text(if (showComments) "Hide comments" else "Show comments")
 			}
 			AnimatedVisibility(showComments) {
-				CommentsList(listCommentInfo = postService.listCommentsUser)
+				CommentsList(postState.commentInfos ?: emptyList())
 			}
 		}
 	}
