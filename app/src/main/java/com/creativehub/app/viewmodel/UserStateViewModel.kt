@@ -91,6 +91,14 @@ class UserStateViewModel : BusyViewModel() {
 	fun onAuthStateChanged(action: (User?) -> Unit) {
 		_onAuthStateChanged = action
 	}
+
+	fun follow(userId: String) {
+		TODO("Not yet implemented")
+	}
+
+	fun unfollow(userId: String) {
+		TODO("Not yet implemented")
+	}
 }
 
 val LocalUserState = compositionLocalOf<UserStateViewModel> { error("User State Not Found!") }

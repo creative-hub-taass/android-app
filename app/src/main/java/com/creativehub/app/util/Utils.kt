@@ -2,7 +2,7 @@ package com.creativehub.app.util
 
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import com.creativehub.app.model.Event
 import kotlinx.datetime.TimeZone
@@ -21,7 +21,7 @@ fun String.ellipsize(n: Int): String {
 @Composable
 fun Event.formatDates(
 	@StringRes resource: Int,
-	locale: Locale = LocalContext.current.resources.configuration.locales[0],
+	locale: Locale = LocalConfiguration.current.locales[0],
 	dateStyle: FormatStyle = FormatStyle.SHORT,
 	timeStyle: FormatStyle = FormatStyle.SHORT,
 ): String {
@@ -34,6 +34,6 @@ fun Event.formatDates(
 }
 
 @Composable
-fun Double.toCurrencyString(locale: Locale = LocalContext.current.resources.configuration.locales[0]): String {
+fun Double.toCurrencyString(locale: Locale = LocalConfiguration.current.locales[0]): String {
 	return DecimalFormat.getCurrencyInstance(locale).format(this)
 }

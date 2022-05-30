@@ -9,14 +9,12 @@ import androidx.compose.material.TabRow
 import androidx.compose.material.TabRowDefaults
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Event
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.filled.People
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.creativehub.app.ui.components.CreatorPageHeader
 import com.creativehub.app.viewmodel.CreatorState
 import com.creativehub.app.viewmodel.LocalUserState
 import com.creativehub.app.viewmodel.rememberCreatorState
@@ -59,6 +57,7 @@ fun CreatorTabs(creatorState: CreatorState) {
 		TabInfo("Portfolio", Icons.Default.List) { PortfolioCreatorTab(creatorState) },
 		TabInfo("Events", Icons.Default.Event) { EventsCreatorTab(creatorState) },
 		TabInfo("Collab", Icons.Default.People) { CollabsCreatorTab(creatorState) },
+		TabInfo("Shop", Icons.Default.Shop) { ShopCreatorTab(creatorState) },
 	)
 	TabRow(
 		selectedTabIndex = pagerState.currentPage,
@@ -93,12 +92,6 @@ data class TabInfo(
 )
 
 @Composable
-fun CreatorPageHeader(creatorState: CreatorState) {
-	Text(text = creatorState.creator?.nickname ?: "?")
-	//TODO
-}
-
-@Composable
 fun AboutCreatorTab(creatorState: CreatorState) {
 	//TODO
 }
@@ -115,5 +108,10 @@ fun EventsCreatorTab(creatorState: CreatorState) {
 
 @Composable
 fun CollabsCreatorTab(creatorState: CreatorState) {
+	//TODO
+}
+
+@Composable
+fun ShopCreatorTab(creatorState: CreatorState) {
 	//TODO
 }
