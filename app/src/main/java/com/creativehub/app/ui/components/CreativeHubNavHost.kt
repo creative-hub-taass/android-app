@@ -45,7 +45,7 @@ fun CreativeHubNavHost(modifier: Modifier) {
 				ArtworkScreen(it.arguments?.getString("id") ?: "")
 			}
 			composable(Destination.Event.route, arguments = Destination.Event.arguments) {
-				EventScreen((it.arguments?.getString("id") ?: "?"))
+				EventScreen(it.arguments?.getString("id") ?: "")
 			}
 			composable(Destination.Post.route, arguments = Destination.Post.arguments) {
 				PostScreen(it.arguments?.getString("id") ?: "")

@@ -86,6 +86,7 @@ fun ArtworkScreen(id: String) {
 							.crossfade(true)
 							.build(),
 						placeholder = painterResource(R.drawable.placeholder),
+						error = painterResource(R.drawable.placeholder),
 						contentDescription = "image",
 						contentScale = ContentScale.FillWidth
 					)
