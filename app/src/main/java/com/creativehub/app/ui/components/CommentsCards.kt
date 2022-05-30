@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Card
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -15,7 +14,7 @@ import com.creativehub.app.model.CommentInfo
 import com.creativehub.app.ui.theme.Typography
 
 @Composable
-fun CommentsList(listCommentInfo: SnapshotStateList<CommentInfo>) {
+fun CommentsList(listCommentInfo: List<CommentInfo>) {
 	Column(
 		Modifier.padding(10.dp)
 	) {
