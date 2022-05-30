@@ -33,3 +33,19 @@ suspend fun APIClient.getListUsers(listId: List<String>) = runCatching {
 		setBody(listId)
 	}.body<List<PublicUser>>()
 }
+
+suspend fun APIClient.getCreator(creatorId: String) = runCatching {
+	APIClient().get("$USERS_BASE_URL/-/$creatorId").body<PublicUser>()
+}
+
+suspend fun APIClient.getArtworksByCreator(creatorId: String) = runCatching {
+	APIClient().get("$PUBLICATIONS_BASE_URL/-/artworks/creator/$creatorId").body<List<Artwork>>()
+}
+
+suspend fun APIClient.getEventsByCreator(creatorId: String) = runCatching {
+	APIClient().get("$PUBLICATIONS_BASE_URL/-/events/creator/$creatorId").body<List<Event>>()
+}
+
+suspend fun APIClient.getPostsByCreator(creatorId: String) = runCatching {
+	APIClient().get("$PUBLICATIONS_BASE_URL/-/posts/creator/$creatorId").body<List<Post>>()
+}

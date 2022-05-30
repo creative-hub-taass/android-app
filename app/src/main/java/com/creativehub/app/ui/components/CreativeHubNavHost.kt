@@ -1,7 +1,6 @@
 package com.creativehub.app.ui.components
 
 import android.widget.Toast
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
@@ -51,8 +50,7 @@ fun CreativeHubNavHost(modifier: Modifier) {
 				PostScreen(it.arguments?.getString("id") ?: "")
 			}
 			composable(Destination.Creator.route, arguments = Destination.Creator.arguments) {
-				// TODO
-				Text(text = Destination.Creator.label + " " + (it.arguments?.getString("id") ?: "?"))
+				CreatorScreen(it.arguments?.getString("id") ?: "")
 			}
 		}
 		composable(Destination.Login.route) {
