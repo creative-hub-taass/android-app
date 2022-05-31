@@ -34,12 +34,12 @@ import com.google.accompanist.placeholder.material.shimmer
 import kotlinx.coroutines.launch
 
 @Composable
-fun CreatorPageHeader(creatorState: CreatorState?) {
+fun CreatorPageHeader(creatorState: CreatorState) {
 	val context = LocalContext.current
 	val userState = LocalUserState.current
 	val navigation = LocalNavigationState.current
 	val scope = rememberCoroutineScope()
-	val creatorUser = creatorState?.creator
+	val creatorUser = creatorState.creator
 	val creator = creatorUser?.creator
 	Row(
 		modifier = Modifier
@@ -88,13 +88,18 @@ fun CreatorPageHeader(creatorState: CreatorState?) {
 		}
 		Column(
 			modifier = Modifier.fillMaxHeight(),
-			verticalArrangement = Arrangement.Center,
+			verticalArrangement = Arrangement.SpaceEvenly,
 			horizontalAlignment = Alignment.End
 		) {
 			Column(
+				modifier = Modifier.wrapContentHeight(Alignment.CenterVertically),
 				verticalArrangement = Arrangement.Center,
-				horizontalAlignment = Alignment.CenterHorizontally
+				horizontalAlignment = Alignment.CenterHorizontally,
 			) {
+				Text(
+					text = "Fans",
+					style = Typography.body2,
+				)
 				Text(
 					text = creatorUser?.fanIds?.size?.toString() ?: "",
 					modifier = Modifier
@@ -106,15 +111,16 @@ fun CreatorPageHeader(creatorState: CreatorState?) {
 					style = Typography.h6,
 					fontWeight = FontWeight.Bold
 				)
-				Text(
-					text = "Fans",
-					style = Typography.subtitle1,
-				)
 			}
 			Column(
+				modifier = Modifier.wrapContentHeight(Alignment.CenterVertically),
 				verticalArrangement = Arrangement.Center,
 				horizontalAlignment = Alignment.CenterHorizontally
 			) {
+				Text(
+					text = "Inspirers",
+					style = Typography.body2,
+				)
 				Text(
 					text = creatorUser?.inspirerIds?.size?.toString() ?: "",
 					modifier = Modifier
@@ -125,17 +131,13 @@ fun CreatorPageHeader(creatorState: CreatorState?) {
 					style = Typography.h6,
 					fontWeight = FontWeight.Bold
 				)
-				Text(
-					text = "Inspirers",
-					style = Typography.subtitle1,
-				)
 			}
 		}
 		Column(
 			verticalArrangement = Arrangement.Center,
 			horizontalAlignment = Alignment.CenterHorizontally
 		) {
-			if (creatorState?.isFollowed == true) {
+			if (creatorState.isFollowed == true) {
 				OutlinedButton(
 					modifier = Modifier.padding(8.dp),
 					onClick = {
@@ -152,7 +154,7 @@ fun CreatorPageHeader(creatorState: CreatorState?) {
 					onClick = {
 						if (userState.isLoggedIn) {
 							scope.launch {
-								creatorState?.id?.let { userState.follow(it) }
+								userState.follow(creatorState.id)
 							}
 						} else {
 							navigation.navigate(Destination.Login.route)
@@ -168,7 +170,7 @@ fun CreatorPageHeader(creatorState: CreatorState?) {
 
 @Preview
 @Composable
-fun CreatorPageHeader() {
+fun CreatorPageHeaderPreview() {
 	CompositionLocalProvider(
 		LocalUserState provides UserStateViewModel(),
 		LocalNavigationState provides rememberNavController()

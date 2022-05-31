@@ -4,19 +4,21 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Tab
-import androidx.compose.material.TabRow
-import androidx.compose.material.TabRowDefaults
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.creativehub.app.ui.components.CreatorPageHeader
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
+import com.creativehub.app.ui.LocalNavigationState
+import com.creativehub.app.ui.components.*
 import com.creativehub.app.viewmodel.CreatorState
 import com.creativehub.app.viewmodel.LocalUserState
+import com.creativehub.app.viewmodel.UserStateViewModel
 import com.creativehub.app.viewmodel.rememberCreatorState
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -42,24 +44,30 @@ fun CreatorScreen(id: String) {
 				.verticalScroll(rememberScrollState())
 		) {
 			CreatorPageHeader(creatorState)
-			CreatorTabs(creatorState)
+			CreatorScreenTabs(creatorState)
 		}
 	}
 }
 
+data class Page(
+	val title: String,
+	val icon: ImageVector,
+	val content: @Composable () -> Unit,
+)
+
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun CreatorTabs(creatorState: CreatorState) {
+fun CreatorScreenTabs(creatorState: CreatorState) {
 	val pagerState = rememberPagerState()
 	val scope = rememberCoroutineScope()
 	val pages = listOf(
-		TabInfo("About", Icons.Default.Info) { AboutCreatorTab(creatorState) },
-		TabInfo("Portfolio", Icons.Default.List) { PortfolioCreatorTab(creatorState) },
-		TabInfo("Events", Icons.Default.Event) { EventsCreatorTab(creatorState) },
-		TabInfo("Collab", Icons.Default.People) { CollabsCreatorTab(creatorState) },
-		TabInfo("Shop", Icons.Default.Shop) { ShopCreatorTab(creatorState) },
+		Page("About", Icons.Default.Info) { AboutCreatorTab(creatorState) },
+		Page("Portfolio", Icons.Default.Dashboard) { PortfolioCreatorTab(creatorState) },
+		Page("Events", Icons.Default.Event) { EventsCreatorTab(creatorState) },
+		Page("Collabs", Icons.Default.People) { CollabsCreatorTab(creatorState) },
+		Page("Shop", Icons.Default.Shop) { ShopCreatorTab(creatorState) },
 	)
-	TabRow(
+	ScrollableTabRow(
 		selectedTabIndex = pagerState.currentPage,
 		indicator = { tabPositions ->
 			TabRowDefaults.Indicator(Modifier.pagerTabIndicatorOffset(pagerState, tabPositions))
@@ -68,6 +76,7 @@ fun CreatorTabs(creatorState: CreatorState) {
 		pages.forEachIndexed { index, tabInfo ->
 			Tab(
 				text = { Text(tabInfo.title) },
+				icon = { Icon(tabInfo.icon, contentDescription = null) },
 				selected = pagerState.currentPage == index,
 				onClick = {
 					scope.launch {
@@ -85,33 +94,13 @@ fun CreatorTabs(creatorState: CreatorState) {
 	}
 }
 
-data class TabInfo(
-	val title: String,
-	val icon: ImageVector,
-	val content: @Composable () -> Unit,
-)
-
+@Preview
 @Composable
-fun AboutCreatorTab(creatorState: CreatorState) {
-	//TODO
-}
-
-@Composable
-fun PortfolioCreatorTab(creatorState: CreatorState) {
-	//TODO
-}
-
-@Composable
-fun EventsCreatorTab(creatorState: CreatorState) {
-	//TODO
-}
-
-@Composable
-fun CollabsCreatorTab(creatorState: CreatorState) {
-	//TODO
-}
-
-@Composable
-fun ShopCreatorTab(creatorState: CreatorState) {
-	//TODO
+fun CreatorScreenPreview() {
+	CompositionLocalProvider(
+		LocalUserState provides UserStateViewModel(),
+		LocalNavigationState provides rememberNavController()
+	) {
+		CreatorScreen("")
+	}
 }

@@ -3,10 +3,7 @@ package com.creativehub.app.viewmodel
 import android.content.Context
 import androidx.compose.runtime.*
 import androidx.lifecycle.viewModelScope
-import com.creativehub.app.api.APIClient
-import com.creativehub.app.api.login
-import com.creativehub.app.api.register
-import com.creativehub.app.api.socialLogin
+import com.creativehub.app.api.*
 import com.creativehub.app.model.User
 import com.creativehub.app.util.getGoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -92,12 +89,18 @@ class UserStateViewModel : BusyViewModel() {
 		_onAuthStateChanged = action
 	}
 
-	fun follow(userId: String) {
-		TODO("Not yet implemented")
+	suspend fun follow(followedId: String) {
+		val followerId = user?.id
+		if (followerId != null) {
+			user = APIClient.follow(followerId, followedId).getOrDefault(user)
+		}
 	}
 
-	fun unfollow(userId: String) {
-		TODO("Not yet implemented")
+	suspend fun unfollow(followedId: String) {
+		val followerId = user?.id
+		if (followerId != null) {
+			user = APIClient.unfollow(followerId, followedId).getOrDefault(user)
+		}
 	}
 }
 
