@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
@@ -91,7 +92,8 @@ fun CreatorScreenTabs(creatorState: CreatorState) {
 	HorizontalPager(
 		modifier = Modifier.fillMaxWidth(),
 		count = pages.size,
-		state = pagerState
+		state = pagerState,
+		verticalAlignment = Alignment.Top,
 	) { page ->
 		pages[page].content()
 	}
