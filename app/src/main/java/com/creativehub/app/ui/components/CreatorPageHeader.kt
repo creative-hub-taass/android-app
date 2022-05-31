@@ -18,6 +18,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -41,16 +42,19 @@ fun CreatorPageHeader(creatorState: CreatorState) {
 	val scope = rememberCoroutineScope()
 	val creatorUser = creatorState.creator
 	val creator = creatorUser?.creator
-	Row(
+	ConstraintLayout(
 		modifier = Modifier
-			.height(IntrinsicSize.Min)
 			.fillMaxWidth()
-			.padding(8.dp),
-		verticalAlignment = Alignment.CenterVertically,
-		horizontalArrangement = Arrangement.SpaceBetween
+			.padding(8.dp)
 	) {
+		val (left, center, right) = createRefs()
 		Column(
-			modifier = Modifier,
+			modifier = Modifier
+				.constrainAs(left) {
+					start.linkTo(parent.start)
+					top.linkTo(parent.top)
+					bottom.linkTo(parent.bottom)
+				},
 			verticalArrangement = Arrangement.Center,
 			horizontalAlignment = Alignment.Start
 		) {
@@ -61,8 +65,8 @@ fun CreatorPageHeader(creatorState: CreatorState) {
 					.build(),
 				contentDescription = "profile picture",
 				modifier = Modifier
-					.padding(8.dp)
-					.size(96.dp)
+					.padding(bottom = 8.dp)
+					.size(72.dp)
 					.border(1.dp, Color.Gray.copy(alpha = 0.5f), CircleShape)
 					.clip(CircleShape)
 					.placeholder(creatorUser == null, highlight = PlaceholderHighlight.shimmer()),
@@ -71,25 +75,32 @@ fun CreatorPageHeader(creatorState: CreatorState) {
 			Text(
 				text = creatorUser?.nickname ?: "",
 				modifier = Modifier
-					.padding(8.dp, 0.dp)
-					.width(128.dp)
-					.placeholder(creatorUser == null, highlight = PlaceholderHighlight.shimmer()),
+					.widthIn(min = 128.dp)
+					.placeholder(creatorUser == null, highlight = PlaceholderHighlight.shimmer())
+					.wrapContentWidth(Alignment.Start),
 				style = Typography.subtitle1,
 				fontWeight = FontWeight.Bold
 			)
 			Text(
 				text = "@${creatorUser?.username}",
 				modifier = Modifier
-					.padding(8.dp, 2.dp)
-					.width(128.dp)
-					.placeholder(creatorUser == null, highlight = PlaceholderHighlight.shimmer()),
+					.padding(top = 2.dp)
+					.widthIn(min = 128.dp)
+					.placeholder(creatorUser == null, highlight = PlaceholderHighlight.shimmer())
+					.wrapContentWidth(Alignment.Start),
 				style = Typography.body2,
 			)
 		}
 		Column(
-			modifier = Modifier.fillMaxHeight(),
+			modifier = Modifier
+				.constrainAs(center) {
+					top.linkTo(parent.top)
+					bottom.linkTo(parent.bottom)
+					start.linkTo(left.end, 8.dp)
+					end.linkTo(right.start, 8.dp)
+				},
 			verticalArrangement = Arrangement.SpaceEvenly,
-			horizontalAlignment = Alignment.End
+			horizontalAlignment = Alignment.CenterHorizontally
 		) {
 			Column(
 				modifier = Modifier.wrapContentHeight(Alignment.CenterVertically),
@@ -134,12 +145,17 @@ fun CreatorPageHeader(creatorState: CreatorState) {
 			}
 		}
 		Column(
+			modifier = Modifier
+				.constrainAs(right) {
+					top.linkTo(parent.top)
+					bottom.linkTo(parent.bottom)
+					end.linkTo(parent.end)
+				},
 			verticalArrangement = Arrangement.Center,
 			horizontalAlignment = Alignment.CenterHorizontally
 		) {
 			if (creatorState.isFollowed == true) {
 				OutlinedButton(
-					modifier = Modifier.padding(8.dp),
 					onClick = {
 						scope.launch {
 							userState.unfollow(creatorState.id)
@@ -150,7 +166,6 @@ fun CreatorPageHeader(creatorState: CreatorState) {
 				}
 			} else {
 				Button(
-					modifier = Modifier.padding(8.dp),
 					onClick = {
 						if (userState.isLoggedIn) {
 							scope.launch {

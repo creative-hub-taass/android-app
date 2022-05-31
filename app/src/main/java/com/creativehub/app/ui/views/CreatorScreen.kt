@@ -2,6 +2,7 @@ package com.creativehub.app.ui.views
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
@@ -68,6 +69,7 @@ fun CreatorScreenTabs(creatorState: CreatorState) {
 		Page("Shop", Icons.Default.Shop) { ShopCreatorTab(creatorState) },
 	)
 	ScrollableTabRow(
+		modifier = Modifier.fillMaxWidth(),
 		selectedTabIndex = pagerState.currentPage,
 		indicator = { tabPositions ->
 			TabRowDefaults.Indicator(Modifier.pagerTabIndicatorOffset(pagerState, tabPositions))
@@ -87,6 +89,7 @@ fun CreatorScreenTabs(creatorState: CreatorState) {
 		}
 	}
 	HorizontalPager(
+		modifier = Modifier.fillMaxWidth(),
 		count = pages.size,
 		state = pagerState
 	) { page ->
