@@ -6,11 +6,11 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.mapLatest
 import kotlin.reflect.KProperty
 
-class SimpleState<T, A>(private val args: A, private val provider: @DisallowComposableCalls suspend (A) -> T) :
-	RememberObserver {
+class SimpleState<T, A>(args: A, private val provider: @DisallowComposableCalls suspend (A) -> T) : RememberObserver {
 	private var rememberScope: CoroutineScope? = null
-	var isLoading by mutableStateOf(false)
+	private val args by mutableStateOf(args)
 	private var value by mutableStateOf<T?>(null)
+	var isLoading by mutableStateOf(false)
 
 	override fun onAbandoned() {
 		clear()
@@ -35,7 +35,7 @@ class SimpleState<T, A>(private val args: A, private val provider: @DisallowComp
 			snapshotFlow { args }
 				.mapLatest {
 					isLoading = true
-					value = provider(args)
+					value = provider(it)
 					isLoading = false
 				}
 				.collect()

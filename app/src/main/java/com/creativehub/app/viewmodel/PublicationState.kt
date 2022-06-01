@@ -7,10 +7,8 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.mapLatest
 
-abstract class PublicationState<T : Publication>(id: String, user: User?) : RememberObserver {
+abstract class PublicationState<T : Publication>(val id: String, val user: User?) : RememberObserver {
 	private var rememberScope: CoroutineScope? = null
-	var id by mutableStateOf(id)
-	var user by mutableStateOf(user)
 	var isLoading by mutableStateOf(false)
 	var publication by mutableStateOf<T?>(null)
 	var creatorsInfo by mutableStateOf<List<Pair<PublicUser, CreationType>>?>(null)
@@ -59,8 +57,6 @@ abstract class PublicationState<T : Publication>(id: String, user: User?) : Reme
 	private fun clear() {
 		rememberScope?.cancel()
 		rememberScope = null
-		id = "null"
-		user = null
 		publication = null
 		creatorsInfo = null
 		likes = null
