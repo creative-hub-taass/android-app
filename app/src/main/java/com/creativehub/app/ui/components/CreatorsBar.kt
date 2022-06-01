@@ -6,13 +6,13 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -52,8 +52,8 @@ fun CreatorsBar(info: PublicationInfo<*>) {
 					modifier = Modifier
 						.padding(start = (i * 20).dp)
 						.zIndex((creators.size - i).toFloat())
-						.size(32.dp)
-						.border(1.dp, Color.Gray.copy(alpha = 0.5f), CircleShape)
+						.size(33.dp)
+						.border(1.dp, MaterialTheme.colors.onSurface, CircleShape)
 						.clip(CircleShape)
 						.clickable { navigation.navigate(Destination.Creator.argRoute(creator.id)) },
 					contentScale = ContentScale.Crop

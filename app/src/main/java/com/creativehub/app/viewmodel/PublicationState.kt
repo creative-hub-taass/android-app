@@ -31,8 +31,13 @@ abstract class PublicationState<T : Publication>(id: String, user: User?) : Reme
 	abstract suspend fun fetchPublication(id: String, user: User?)
 
 	protected suspend fun getPublicationInfo(id: String, user: User?) {
+		val publication = this.publication
 		if (publication != null) {
-			this.creatorsInfo = APIClient.getCreators(publication!!.creations).getOrNull()
+			this.creatorsInfo = APIClient.getCreators(publication.creations.map { it.user }).map { list ->
+				list.zip(publication.creations)
+					.filter { it.first.id == it.second.user }
+					.map { Pair(it.first, it.second.creationType) }
+			}.getOrNull()
 			this.likes = APIClient.getLikes(id).getOrNull()
 			if (user != null) {
 				this.userLiked = APIClient.getUserLikedPublication(id, user.id).getOrDefault(false)
