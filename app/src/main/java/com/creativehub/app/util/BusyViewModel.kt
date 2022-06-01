@@ -1,4 +1,4 @@
-package com.creativehub.app.viewmodel
+package com.creativehub.app.util
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf

@@ -120,8 +120,7 @@ fun ArtworkScreen(id: String) {
 					Row(
 						verticalAlignment = Alignment.CenterVertically
 					) {
-						val price = artwork.price?.toCurrencyString()
-						val currency = artwork.currency?.symbol
+						val price = artwork.price?.toCurrencyString(artwork.currency)
 						Icon(
 							imageVector = Icons.Rounded.LocalAtm,
 							contentDescription = "Icon",
@@ -131,7 +130,7 @@ fun ArtworkScreen(id: String) {
 							tint = Color.Gray
 						)
 						Text(
-							text = "Price: $currency $price"
+							text = "Price: $price"
 						)
 					}
 					Row(

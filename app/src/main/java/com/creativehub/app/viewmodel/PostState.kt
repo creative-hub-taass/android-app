@@ -1,7 +1,7 @@
 package com.creativehub.app.viewmodel
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import com.creativehub.app.api.APIClient
 import com.creativehub.app.api.getPost
 import com.creativehub.app.model.Post
@@ -16,7 +16,7 @@ class PostState(id: String, user: User?) : PublicationState<Post>(id, user) {
 
 @Composable
 fun rememberPostState(id: String, user: User?): PostState {
-	val info = remember(id, user) { PostState(id, user) }
+	val info = rememberSaveable(id, user, saver = PublicationState.Saver()) { PostState(id, user) }
 	info.onRemembered()
 	return info
 }

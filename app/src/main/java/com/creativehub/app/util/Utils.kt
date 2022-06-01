@@ -2,7 +2,7 @@ package com.creativehub.app.util
 
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import com.creativehub.app.model.Event
 import kotlinx.datetime.TimeZone
@@ -21,11 +21,15 @@ fun String.ellipsize(n: Int): String {
 @Composable
 fun Event.formatDates(
 	@StringRes resource: Int,
-	locale: Locale = LocalContext.current.resources.configuration.locales[0],
 	dateStyle: FormatStyle = FormatStyle.SHORT,
-	timeStyle: FormatStyle = FormatStyle.SHORT,
+	timeStyle: FormatStyle? = FormatStyle.SHORT,
 ): String {
-	val dateFormat = DateTimeFormatter.ofLocalizedDateTime(dateStyle, timeStyle).withLocale(locale)
+	val locale = LocalConfiguration.current.locales[0]
+	val formatter = when {
+		timeStyle != null -> DateTimeFormatter.ofLocalizedDateTime(dateStyle, timeStyle)
+		else -> DateTimeFormatter.ofLocalizedDate(dateStyle)
+	}
+	val dateFormat = formatter.withLocale(locale)
 	val startDate = startDateTime.toLocalDateTime(TimeZone.currentSystemDefault())
 		.toJavaLocalDateTime().format(dateFormat)
 	val endDate = startDateTime.toLocalDateTime(TimeZone.currentSystemDefault())
@@ -34,6 +38,12 @@ fun Event.formatDates(
 }
 
 @Composable
-fun Double.toCurrencyString(locale: Locale = LocalContext.current.resources.configuration.locales[0]): String {
-	return DecimalFormat.getCurrencyInstance(locale).format(this)
+fun Double.toCurrencyString(currency: Currency?): String {
+	val locale = LocalConfiguration.current.locales[0]
+	val format = DecimalFormat.getCurrencyInstance(locale)
+	format.currency = currency
+	if (this > 1000) {
+		format.maximumFractionDigits = 0
+	}
+	return format.format(this)
 }
