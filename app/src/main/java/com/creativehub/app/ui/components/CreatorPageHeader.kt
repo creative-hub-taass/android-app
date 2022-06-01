@@ -93,13 +93,14 @@ fun CreatorPageHeader(creatorState: CreatorState) {
 		}
 		Column(
 			modifier = Modifier
+				.fillMaxHeight()
 				.constrainAs(center) {
 					top.linkTo(parent.top)
 					bottom.linkTo(parent.bottom)
 					start.linkTo(left.end, 8.dp)
 					end.linkTo(right.start, 8.dp)
 				},
-			verticalArrangement = Arrangement.SpaceEvenly,
+			verticalArrangement = Arrangement.SpaceAround,
 			horizontalAlignment = Alignment.CenterHorizontally
 		) {
 			Column(
