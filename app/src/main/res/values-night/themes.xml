@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+	<style name="Theme.CreativeHub" parent="Theme.MaterialComponents.DayNight">
+		<item name="android:windowBackground">@drawable/splash_dark</item>
+		<item name="android:statusBarColor">@color/black</item>
+		<item name="android:windowLightStatusBar">false</item>
+	</style>
+
+</resources>
