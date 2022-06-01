@@ -1,18 +1,18 @@
 package com.creativehub.app.api
 
-import com.creativehub.app.model.*
+import com.creativehub.app.model.Artwork
+import com.creativehub.app.model.Event
+import com.creativehub.app.model.Post
+import com.creativehub.app.model.PublicUser
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 
-suspend fun APIClient.getCreators(creations: List<Creation>) = runCatching {
+suspend fun APIClient.getCreators(ids: List<String>) = runCatching {
 	APIClient().post("$USERS_BASE_URL/-/public") {
 		contentType(ContentType.Application.Json)
-		setBody(creations.map { it.user })
+		setBody(ids)
 	}.body<List<PublicUser>>()
-		.zip(creations)
-		.filter { it.first.id == it.second.user }
-		.map { Pair(it.first, it.second.creationType) }
 }
 
 suspend fun APIClient.getArtwork(artworkId: String) = runCatching {
@@ -32,4 +32,20 @@ suspend fun APIClient.getListUsers(listId: List<String>) = runCatching {
 		contentType(ContentType.Application.Json)
 		setBody(listId)
 	}.body<List<PublicUser>>()
+}
+
+suspend fun APIClient.getCreator(creatorId: String) = runCatching {
+	APIClient().get("$USERS_BASE_URL/-/$creatorId").body<PublicUser>()
+}
+
+suspend fun APIClient.getArtworksByCreator(creatorId: String) = runCatching {
+	APIClient().get("$PUBLICATIONS_BASE_URL/-/artworks/creator/$creatorId").body<List<Artwork>>()
+}
+
+suspend fun APIClient.getEventsByCreator(creatorId: String) = runCatching {
+	APIClient().get("$PUBLICATIONS_BASE_URL/-/events/creator/$creatorId").body<List<Event>>()
+}
+
+suspend fun APIClient.getPostsByCreator(creatorId: String) = runCatching {
+	APIClient().get("$PUBLICATIONS_BASE_URL/-/posts/creator/$creatorId").body<List<Post>>()
 }

@@ -10,6 +10,7 @@ data class Comment(
 	val message: String,
 )
 
+@Serializable
 class CommentInfo(
 	val comment: Comment,
 	val user: PublicUser,

@@ -23,7 +23,9 @@ object APIClient {
 	private val bearerTokenStorage = mutableListOf<BearerTokens>()
 	private val client = HttpClient(CIO) {
 		expectSuccess = true
-		install(HttpTimeout)
+		install(HttpTimeout) {
+			requestTimeoutMillis = 30 * 1000
+		}
 		install(ContentNegotiation) {
 			json(Json {
 				ignoreUnknownKeys = true

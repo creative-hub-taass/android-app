@@ -1,7 +1,7 @@
 package com.creativehub.app.viewmodel
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import com.creativehub.app.api.APIClient
 import com.creativehub.app.api.getEvent
 import com.creativehub.app.model.Event
@@ -16,7 +16,7 @@ class EventState(id: String, user: User?) : PublicationState<Event>(id, user) {
 
 @Composable
 fun rememberEventState(id: String, user: User?): EventState {
-	val info = remember(id, user) { EventState(id, user) }
+	val info = rememberSaveable(id, user, saver = PublicationState.Saver()) { EventState(id, user) }
 	info.onRemembered()
 	return info
 }

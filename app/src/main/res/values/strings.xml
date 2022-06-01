@@ -11,8 +11,8 @@
 	<string name="email">E-mail</string>
 	<string name="password">Password</string>
 	<string name="nickname">Nickname</string>
-	<string name="from_to_dates" formatted="true">From %s to %s</string>
-	<string name="interval_dates" formatted="true">%s - %s</string>
+	<string name="from_to_dates">From %s to %s</string>
+	<string name="interval_dates">%s - %s</string>
 	<plurals name="available_copies">
 		<item quantity="zero">Sold</item>
 		<item quantity="one">One copy available</item>
