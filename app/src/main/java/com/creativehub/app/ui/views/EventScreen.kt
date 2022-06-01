@@ -29,6 +29,7 @@ import coil.request.ImageRequest
 import com.creativehub.app.R
 import com.creativehub.app.ui.components.CommentsList
 import com.creativehub.app.ui.components.CreatorsList
+import com.creativehub.app.ui.components.MapElement
 import com.creativehub.app.ui.components.SocialBar
 import com.creativehub.app.ui.theme.Typography
 import com.creativehub.app.util.formatDates
@@ -96,6 +97,7 @@ fun EventScreen(id: String) {
 						text = event.formatDates(R.string.from_to_dates, dateStyle = FormatStyle.MEDIUM)
 					)
 				}
+				MapElement(event.coordinates.latitude, event.coordinates.longitude, event.locationName)
 				Row(
 					verticalAlignment = Alignment.CenterVertically
 				) {
