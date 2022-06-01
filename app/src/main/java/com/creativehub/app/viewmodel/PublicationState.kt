@@ -1,11 +1,15 @@
 package com.creativehub.app.viewmodel
 
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.SaverScope
 import com.creativehub.app.api.*
 import com.creativehub.app.model.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.*
 
 abstract class PublicationState<T : Publication>(val id: String, val user: User?) : RememberObserver {
 	private var rememberScope: CoroutineScope? = null
@@ -94,5 +98,59 @@ abstract class PublicationState<T : Publication>(val id: String, val user: User?
 
 	override fun onAbandoned() {
 		clear()
+	}
+
+	companion object {
+		fun <T : Publication, P : PublicationState<T>> Saver(): Saver<P, String> = object : Saver<P, String> {
+			override fun restore(value: String): P? {
+				val jsonObject = Json.decodeFromString<JsonObject>(value)
+				val idJson = jsonObject["id"] ?: return null
+				val userJson = jsonObject["user"] ?: return null
+				val isLoadingJson = jsonObject["isLoading"] ?: return null
+				val publicationJson = jsonObject["publication"] ?: return null
+				val creatorsInfoJson = jsonObject["creatorsInfo"] ?: return null
+				val likesJson = jsonObject["likes"] ?: return null
+				val userLikedJson = jsonObject["userLiked"] ?: return null
+				val commentsJson = jsonObject["comments"] ?: return null
+				val commentInfosJson = jsonObject["commentInfos"] ?: return null
+				val id = Json.decodeFromJsonElement<String>(idJson)
+				val user = Json.decodeFromJsonElement<User?>(userJson)
+				val isLoading = Json.decodeFromJsonElement<Boolean>(isLoadingJson)
+				val publication = Json.decodeFromJsonElement<Publication?>(publicationJson)
+				val creatorsInfo =
+					Json.decodeFromJsonElement<List<Pair<PublicUser, CreationType>>?>(creatorsInfoJson)
+				val likes = Json.decodeFromJsonElement<Int?>(likesJson)
+				val userLiked = Json.decodeFromJsonElement<Boolean?>(userLikedJson)
+				val comments = Json.decodeFromJsonElement<List<Comment>?>(commentsJson)
+				val commentInfos = Json.decodeFromJsonElement<List<CommentInfo>?>(commentInfosJson)
+				val publicationState = when (publication) {
+					is Artwork -> ArtworkState(id, user).apply { this.publication = publication }
+					is Event -> EventState(id, user).apply { this.publication = publication }
+					is Post -> PostState(id, user).apply { this.publication = publication }
+					null -> null
+				} as P?
+				publicationState?.isLoading = isLoading
+				publicationState?.creatorsInfo = creatorsInfo
+				publicationState?.likes = likes
+				publicationState?.userLiked = userLiked
+				publicationState?.comments = comments
+				publicationState?.commentInfos = commentInfos
+				return publicationState
+			}
+
+			override fun SaverScope.save(value: P): String {
+				return buildJsonObject {
+					put("id", Json.encodeToJsonElement(value.id))
+					put("user", Json.encodeToJsonElement(value.user))
+					put("isLoading", Json.encodeToJsonElement(value.isLoading))
+					put("publication", Json.encodeToJsonElement<Publication?>(value.publication))
+					put("creatorsInfo", Json.encodeToJsonElement(value.creatorsInfo))
+					put("likes", Json.encodeToJsonElement(value.likes))
+					put("userLiked", Json.encodeToJsonElement(value.userLiked))
+					put("comments", Json.encodeToJsonElement(value.comments))
+					put("commentInfos", Json.encodeToJsonElement(value.commentInfos))
+				}.toString()
+			}
+		}
 	}
 }

@@ -72,6 +72,8 @@ fun CreatorScreenTabs(creatorState: CreatorState) {
 	ScrollableTabRow(
 		modifier = Modifier.fillMaxWidth(),
 		selectedTabIndex = pagerState.currentPage,
+		contentColor = MaterialTheme.colors.onSecondary,
+		backgroundColor = MaterialTheme.colors.secondary,
 		indicator = { tabPositions ->
 			TabRowDefaults.Indicator(Modifier.pagerTabIndicatorOffset(pagerState, tabPositions))
 		}

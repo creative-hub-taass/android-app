@@ -63,8 +63,7 @@ fun ShopCreatorTab(creatorState: CreatorState) {
 		verticalArrangement = Arrangement.Top,
 	) {
 		items(items) {
-			val price = it.price?.toCurrencyString()
-			val currency = it.currency?.symbol
+			val price = it.price?.toCurrencyString(it.currency)
 			Box(
 				modifier = Modifier
 					.fillMaxWidth()
@@ -93,7 +92,7 @@ fun ShopCreatorTab(creatorState: CreatorState) {
 						.padding(6.dp, 2.dp),
 					text = when (it.availableCopies) {
 						0 -> "Sold out"
-						else -> "$currency $price"
+						else -> price ?: "-"
 					},
 					color = Color.Black,
 					style = Typography.body1,

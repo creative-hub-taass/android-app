@@ -1,11 +1,15 @@
 package com.creativehub.app.viewmodel
 
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.SaverScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import com.creativehub.app.api.*
 import com.creativehub.app.model.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.*
 
 class CreatorState(id: String, user: User?) : RememberObserver {
 	private var rememberScope: CoroutineScope? = null
@@ -75,11 +79,58 @@ class CreatorState(id: String, user: User?) : RememberObserver {
 			events = APIClient.getEventsByCreator(id).getOrNull()
 		}
 	}
+
+	object Saver : androidx.compose.runtime.saveable.Saver<CreatorState, String> {
+		override fun restore(value: String): CreatorState? {
+			val jsonObject = Json.decodeFromString<JsonObject>(value)
+			val idJson = jsonObject["id"] ?: return null
+			val userJson = jsonObject["user"] ?: return null
+			val isLoadingJson = jsonObject["isLoading"] ?: return null
+			val creatorJson = jsonObject["creator"] ?: return null
+			val isFollowedJson = jsonObject["isFollowed"] ?: return null
+			val isFollowerJson = jsonObject["isFollower"] ?: return null
+			val postsJson = jsonObject["posts"] ?: return null
+			val artworksJson = jsonObject["artworks"] ?: return null
+			val eventsJson = jsonObject["events"] ?: return null
+			val id = Json.decodeFromJsonElement<String>(idJson)
+			val user = Json.decodeFromJsonElement<User?>(userJson)
+			val isLoading = Json.decodeFromJsonElement<Boolean>(isLoadingJson)
+			val creator = Json.decodeFromJsonElement<PublicUser?>(creatorJson)
+			val isFollowed = Json.decodeFromJsonElement<Boolean?>(isFollowedJson)
+			val isFollower = Json.decodeFromJsonElement<Boolean?>(isFollowerJson)
+			val posts = Json.decodeFromJsonElement<List<Post>>(postsJson)
+			val artworks = Json.decodeFromJsonElement<List<Artwork>>(artworksJson)
+			val events = Json.decodeFromJsonElement<List<Event>>(eventsJson)
+			val creatorState = CreatorState(id, user)
+			creatorState.isLoading = isLoading
+			creatorState.creator = creator
+			creatorState.isFollowed = isFollowed
+			creatorState.isFollower = isFollower
+			creatorState.posts = posts
+			creatorState.artworks = artworks
+			creatorState.events = events
+			return creatorState
+		}
+
+		override fun SaverScope.save(value: CreatorState): String {
+			return buildJsonObject {
+				put("id", Json.encodeToJsonElement(value.id))
+				put("user", Json.encodeToJsonElement(value.user))
+				put("isLoading", Json.encodeToJsonElement(value.isLoading))
+				put("creator", Json.encodeToJsonElement(value.creator))
+				put("isFollowed", Json.encodeToJsonElement(value.isFollowed))
+				put("isFollower", Json.encodeToJsonElement(value.isFollower))
+				put("posts", Json.encodeToJsonElement(value.posts))
+				put("artworks", Json.encodeToJsonElement(value.artworks))
+				put("events", Json.encodeToJsonElement(value.events))
+			}.toString()
+		}
+	}
 }
 
 @Composable
 fun rememberCreatorState(id: String, user: User?): CreatorState {
-	val state = remember(id, user) { CreatorState(id, user) }
+	val state = rememberSaveable(id, user, saver = CreatorState.Saver) { CreatorState(id, user) }
 	state.onRemembered()
 	return state
 }

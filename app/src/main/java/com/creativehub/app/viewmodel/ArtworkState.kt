@@ -1,7 +1,7 @@
 package com.creativehub.app.viewmodel
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import com.creativehub.app.api.APIClient
 import com.creativehub.app.api.getArtwork
 import com.creativehub.app.model.Artwork
@@ -16,7 +16,7 @@ class ArtworkState(id: String, user: User?) : PublicationState<Artwork>(id, user
 
 @Composable
 fun rememberArtworkState(id: String, user: User?): ArtworkState {
-	val info = remember(id, user) { ArtworkState(id, user) }
+	val info = rememberSaveable(id, user, saver = PublicationState.Saver()) { ArtworkState(id, user) }
 	info.onRemembered()
 	return info
 }

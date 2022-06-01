@@ -38,8 +38,10 @@ fun Event.formatDates(
 }
 
 @Composable
-fun Double.toCurrencyString(locale: Locale = LocalConfiguration.current.locales[0]): String {
+fun Double.toCurrencyString(currency: Currency?): String {
+	val locale = LocalConfiguration.current.locales[0]
 	val format = DecimalFormat.getCurrencyInstance(locale)
+	format.currency = currency
 	if (this > 1000) {
 		format.maximumFractionDigits = 0
 	}
