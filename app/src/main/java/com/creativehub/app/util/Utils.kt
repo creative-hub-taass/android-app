@@ -21,11 +21,15 @@ fun String.ellipsize(n: Int): String {
 @Composable
 fun Event.formatDates(
 	@StringRes resource: Int,
-	locale: Locale = LocalConfiguration.current.locales[0],
 	dateStyle: FormatStyle = FormatStyle.SHORT,
-	timeStyle: FormatStyle = FormatStyle.SHORT,
+	timeStyle: FormatStyle? = FormatStyle.SHORT,
 ): String {
-	val dateFormat = DateTimeFormatter.ofLocalizedDateTime(dateStyle, timeStyle).withLocale(locale)
+	val locale = LocalConfiguration.current.locales[0]
+	val formatter = when {
+		timeStyle != null -> DateTimeFormatter.ofLocalizedDateTime(dateStyle, timeStyle)
+		else -> DateTimeFormatter.ofLocalizedDate(dateStyle)
+	}
+	val dateFormat = formatter.withLocale(locale)
 	val startDate = startDateTime.toLocalDateTime(TimeZone.currentSystemDefault())
 		.toJavaLocalDateTime().format(dateFormat)
 	val endDate = startDateTime.toLocalDateTime(TimeZone.currentSystemDefault())
@@ -35,5 +39,9 @@ fun Event.formatDates(
 
 @Composable
 fun Double.toCurrencyString(locale: Locale = LocalConfiguration.current.locales[0]): String {
-	return DecimalFormat.getCurrencyInstance(locale).format(this)
+	val format = DecimalFormat.getCurrencyInstance(locale)
+	if (this > 1000) {
+		format.maximumFractionDigits = 0
+	}
+	return format.format(this)
 }
