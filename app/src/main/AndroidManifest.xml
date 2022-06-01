@@ -13,7 +13,7 @@
 		android:supportsRtl="true"
 		android:theme="@style/Theme.CreativeHub">
 		<meta-data android:name="com.google.android.geo.API_KEY"
-			android:value="${MAPS_API_KEY}"
+			android:value="@string/maps_api_key"
 			/>
 		<activity
 			android:name=".MainActivity"
