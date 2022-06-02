@@ -11,7 +11,6 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
@@ -26,19 +25,16 @@ import com.creativehub.app.ui.LocalNavigationState
 import com.creativehub.app.ui.navigation.Destination
 import com.creativehub.app.ui.theme.Typography
 import com.creativehub.app.util.getPreviewArtwork
-import com.creativehub.app.viewmodel.LocalFeedState
 import com.creativehub.app.viewmodel.LocalUserState
-import kotlinx.coroutines.launch
 
 @Composable
 fun SocialBar(
 	info: PublicationInfo<*>?,
+	onLikeClick: (info: PublicationInfo<*>, userId: String) -> Unit = { _, _ -> },
 	onCommentClick: () -> Unit = {},
 ) {
 	val userState = LocalUserState.current
-	val feedState = LocalFeedState.current
 	val navigation = LocalNavigationState.current
-	val coroutineScope = rememberCoroutineScope()
 	val user = userState.user
 	val destination = when (info?.publication) {
 		is Artwork -> Destination.Artwork
@@ -68,9 +64,7 @@ fun SocialBar(
 		val (likeBtn, commentBtn, shareBtn, likesText, commentsText) = createRefs()
 		IconButton(onClick = {
 			if (user != null && info != null) {
-				coroutineScope.launch {
-					feedState.toggleLike(info, user.id)
-				}
+				onLikeClick(info, user.id)
 			} else navigation.navigate(Destination.Login.route)
 		}, modifier = Modifier.constrainAs(likeBtn) {
 			start.linkTo(parent.start)

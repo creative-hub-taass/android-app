@@ -3,6 +3,7 @@ package com.creativehub.app.ui.views
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
@@ -14,8 +15,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
+import com.creativehub.app.BuildConfig
 import com.creativehub.app.ui.LocalNavigationState
 import com.creativehub.app.ui.components.*
 import com.creativehub.app.viewmodel.CreatorState
@@ -32,21 +36,46 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun CreatorScreen(id: String) {
+	val uriHandler = LocalUriHandler.current
 	val userState = LocalUserState.current
 	val user = userState.user
 	val creatorState = rememberCreatorState(id, user)
 	val swipeRefreshState = rememberSwipeRefreshState(creatorState.isLoading)
-	SwipeRefresh(
-		state = swipeRefreshState,
-		onRefresh = { creatorState.refresh() }
+	Scaffold(
+		modifier = Modifier.fillMaxSize(),
+		backgroundColor = MaterialTheme.colors.background,
+		floatingActionButton = {
+			if (user != null) {
+				val buyURL = "${BuildConfig.CLIENT_URL}/about/${user.id}"
+				ExtendedFloatingActionButton(
+					onClick = {
+						uriHandler.openUri(buyURL)
+					},
+					backgroundColor = MaterialTheme.colors.primary,
+					contentColor = MaterialTheme.colors.onPrimary,
+					icon = {
+						Icon(imageVector = Icons.Default.VolunteerActivism, contentDescription = null)
+					},
+					text = {
+						Text(text = "SEND A TIP")
+					}
+				)
+			}
+		}
 	) {
-		Column(
-			modifier = Modifier
-				.fillMaxSize()
-				.verticalScroll(rememberScrollState())
+		SwipeRefresh(
+			state = swipeRefreshState,
+			onRefresh = { creatorState.refresh() }
 		) {
-			CreatorPageHeader(creatorState)
-			CreatorScreenTabs(creatorState)
+			Column(
+				modifier = Modifier
+					.fillMaxSize()
+					.verticalScroll(rememberScrollState())
+					.padding(bottom = 72.dp)
+			) {
+				CreatorPageHeader(creatorState)
+				CreatorScreenTabs(creatorState)
+			}
 		}
 	}
 }

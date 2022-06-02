@@ -10,11 +10,14 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
+import com.creativehub.app.api.APIClient
+import com.creativehub.app.api.toggleLike
 import com.creativehub.app.model.Post
 import com.creativehub.app.model.PublicationInfo
 import com.creativehub.app.ui.LocalNavigationState
@@ -26,6 +29,7 @@ import com.creativehub.app.viewmodel.FeedStateViewModel
 import com.creativehub.app.viewmodel.LocalFeedState
 import com.creativehub.app.viewmodel.LocalUserState
 import com.creativehub.app.viewmodel.UserStateViewModel
+import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toLocalDateTime
@@ -37,6 +41,8 @@ import java.time.format.FormatStyle
 fun PostFeedElement(info: PublicationInfo<Post>) {
 	val indication = LocalIndication.current
 	val navigation = LocalNavigationState.current
+	val feedState = LocalFeedState.current
+	val coroutineScope = rememberCoroutineScope()
 	val post = info.publication
 	Box(modifier = Modifier
 		.fillMaxWidth()
@@ -69,9 +75,18 @@ fun PostFeedElement(info: PublicationInfo<Post>) {
 						.alpha(0.7f),
 					style = Typography.caption,
 				)
-				SocialBar(info) {
-					navigation.navigate(Destination.Post.argRoute(post.id))
-				}
+				SocialBar(
+					info,
+					onLikeClick = { info, user ->
+						coroutineScope.launch {
+							APIClient.toggleLike(info, user)
+							feedState.refresh()
+						}
+					},
+					onCommentClick = {
+						navigation.navigate(Destination.Post.argRoute(post.id))
+					}
+				)
 			}
 		}
 	}

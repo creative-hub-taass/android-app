@@ -8,6 +8,7 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,6 +22,8 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.creativehub.app.R
+import com.creativehub.app.api.APIClient
+import com.creativehub.app.api.toggleLike
 import com.creativehub.app.model.Event
 import com.creativehub.app.model.PublicationInfo
 import com.creativehub.app.ui.LocalNavigationState
@@ -32,6 +35,7 @@ import com.creativehub.app.viewmodel.FeedStateViewModel
 import com.creativehub.app.viewmodel.LocalFeedState
 import com.creativehub.app.viewmodel.LocalUserState
 import com.creativehub.app.viewmodel.UserStateViewModel
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -40,6 +44,8 @@ fun EventFeedElement(info: PublicationInfo<Event>) {
 	val indication = LocalIndication.current
 	val navigation = LocalNavigationState.current
 	val context = LocalContext.current
+	val feedState = LocalFeedState.current
+	val coroutineScope = rememberCoroutineScope()
 	val dates = event.formatDates(R.string.interval_dates)
 	Box(modifier = Modifier
 		.fillMaxWidth()
@@ -92,9 +98,18 @@ fun EventFeedElement(info: PublicationInfo<Event>) {
 						)
 					}
 				}
-				SocialBar(info) {
-					navigation.navigate(Destination.Event.argRoute(event.id))
-				}
+				SocialBar(
+					info,
+					onLikeClick = { info, user ->
+						coroutineScope.launch {
+							APIClient.toggleLike(info, user)
+							feedState.refresh()
+						}
+					},
+					onCommentClick = {
+						navigation.navigate(Destination.Event.argRoute(event.id))
+					}
+				)
 				Text(
 					text = event.name.trim(),
 					modifier = Modifier.padding(8.dp),

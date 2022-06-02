@@ -26,57 +26,52 @@ import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 @Composable
 fun EventsScreen() {
 	val lazyFeed = LocalFeedState.current.events.collectAsLazyPagingItems()
-	Column(Modifier.fillMaxSize(),
-		   verticalArrangement = Arrangement.Center,
-		   horizontalAlignment = Alignment.CenterHorizontally
+	SwipeRefresh(
+		state = rememberSwipeRefreshState(lazyFeed.loadState.refresh is LoadState.Loading
+												  || lazyFeed.loadState.prepend is LoadState.Loading),
+		onRefresh = { lazyFeed.refresh() }
 	) {
-		SwipeRefresh(
-			state = rememberSwipeRefreshState(lazyFeed.loadState.refresh is LoadState.Loading
-													  || lazyFeed.loadState.prepend is LoadState.Loading),
-			onRefresh = { lazyFeed.refresh() }
+		LazyColumn(
+			modifier = Modifier.fillMaxSize(),
+			contentPadding = PaddingValues(2.dp)
 		) {
-			LazyColumn(
-				modifier = Modifier.fillMaxSize(),
-				contentPadding = PaddingValues(2.dp)
-			) {
-				items(lazyFeed, { it.publication.id }) {
-					if (it != null) {
-						EventFeedElement(it)
-					}
+			items(lazyFeed, { it.publication.id }) {
+				if (it != null) {
+					EventFeedElement(it)
 				}
-				lazyFeed.apply {
-					when (val refreshState = loadState.refresh) {
-						is LoadState.Error -> {
-							item {
-								ErrorItem(
-									message = refreshState.error.message?.ifEmpty { null } ?: "Network error",
-									modifier = Modifier.fillParentMaxSize(),
-									onClickRetry = { retry() }
-								)
-							}
+			}
+			lazyFeed.apply {
+				when (val refreshState = loadState.refresh) {
+					is LoadState.Error -> {
+						item {
+							ErrorItem(
+								message = refreshState.error.message?.ifEmpty { null } ?: "Network error",
+								modifier = Modifier.fillParentMaxSize(),
+								onClickRetry = { retry() }
+							)
 						}
-						is LoadState.NotLoading -> {}
-						is LoadState.Loading -> {}
 					}
-					when (val appendState = loadState.append) {
-						is LoadState.NotLoading -> {}
-						is LoadState.Loading -> {
-							item {
-								CircularProgressIndicator(
-									modifier = Modifier
-										.fillMaxWidth()
-										.padding(16.dp)
-										.wrapContentWidth(Alignment.CenterHorizontally)
-								)
-							}
+					is LoadState.NotLoading -> {}
+					is LoadState.Loading -> {}
+				}
+				when (val appendState = loadState.append) {
+					is LoadState.NotLoading -> {}
+					is LoadState.Loading -> {
+						item {
+							CircularProgressIndicator(
+								modifier = Modifier
+									.fillMaxWidth()
+									.padding(16.dp)
+									.wrapContentWidth(Alignment.CenterHorizontally)
+							)
 						}
-						is LoadState.Error -> {
-							item {
-								ErrorItem(
-									message = appendState.error.message?.ifEmpty { null } ?: "Network error",
-									onClickRetry = { retry() }
-								)
-							}
+					}
+					is LoadState.Error -> {
+						item {
+							ErrorItem(
+								message = appendState.error.message?.ifEmpty { null } ?: "Network error",
+								onClickRetry = { retry() }
+							)
 						}
 					}
 				}

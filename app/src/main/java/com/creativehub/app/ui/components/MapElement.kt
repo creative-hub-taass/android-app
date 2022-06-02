@@ -2,6 +2,7 @@ package com.creativehub.app.ui.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults.buttonColors
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MyLocation
@@ -9,6 +10,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.creativehub.app.model.Event
@@ -26,13 +29,11 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.launch
 
 @Composable
-fun MapElement(events: List<Event>?) {
-	if (events == null) {
+fun MapElement(events: List<Event>?, modifier: Modifier = Modifier) {
+	val isInPreview = LocalInspectionMode.current
+	if (events == null || isInPreview) {
 		Box(
-			modifier = Modifier
-				.height(250.dp)
-				.fillMaxWidth()
-				.placeholder(true, highlight = PlaceholderHighlight.shimmer()),
+			modifier = modifier.then(Modifier.placeholder(true, highlight = PlaceholderHighlight.shimmer())),
 		)
 		return
 	}
@@ -52,9 +53,7 @@ fun MapElement(events: List<Event>?) {
 		}
 	}
 	Box(
-		modifier = Modifier
-			.height(250.dp)
-			.fillMaxWidth(),
+		modifier = modifier,
 		contentAlignment = Alignment.TopEnd
 	) {
 		GoogleMap(
@@ -73,10 +72,11 @@ fun MapElement(events: List<Event>?) {
 		}
 		Button(
 			modifier = Modifier
-				.padding(14.dp)
+				.padding(12.dp)
 				.size(40.dp),
 			contentPadding = PaddingValues(8.dp),
 			onClick = { resetPosition() },
+			colors = buttonColors(backgroundColor = Color.White.copy(alpha = 0.8f), contentColor = Color.DarkGray)
 		) {
 			Icon(
 				imageVector = Icons.Default.MyLocation,

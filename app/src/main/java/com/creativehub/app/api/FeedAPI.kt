@@ -23,7 +23,7 @@ suspend fun APIClient.getFeed(userId: String?, page: Int, size: Int) = runCatchi
 	Pair(feed, links)
 }
 
-suspend fun APIClient.getEvents(userId: String?, page: Int, size: Int) = runCatching {
+suspend fun APIClient.getEventsFeed(userId: String?, page: Int, size: Int) = runCatching {
 	val urlString = when (userId) {
 		null -> "$PUBLICATIONS_BASE_URL/-/feed/events"
 		else -> "$PUBLICATIONS_BASE_URL/feed/events/$userId"

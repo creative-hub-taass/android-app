@@ -8,16 +8,15 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.creativehub.app.api.APIClient
+import com.creativehub.app.api.toggleLike
 import com.creativehub.app.ui.components.CommentsList
 import com.creativehub.app.ui.components.CreatorsList
 import com.creativehub.app.ui.components.SocialBar
@@ -31,6 +30,7 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.halilibo.richtext.markdown.Markdown
 import com.halilibo.richtext.ui.material.MaterialRichText
+import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toLocalDateTime
@@ -42,6 +42,7 @@ fun PostScreen(id: String) {
 	val userState = LocalUserState.current
 	val uriHandler = LocalUriHandler.current
 	val user = userState.user
+	val coroutineScope = rememberCoroutineScope()
 	val postState = rememberPostState(id, user)
 	var showComments by rememberSaveable { mutableStateOf(false) }
 	val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = postState.isLoading)
@@ -49,12 +50,13 @@ fun PostScreen(id: String) {
 		postState.refresh()
 	}) {
 		val post = postState.publication
+		val scrollState = rememberScrollState()
 		Column(
 			modifier = Modifier
 				.fillMaxSize()
-				.verticalScroll(rememberScrollState())
+				.verticalScroll(scrollState)
 				.background(MaterialTheme.colors.background)
-				.padding(bottom = 16.dp)
+				.padding(bottom = 72.dp)
 		) {
 			CreatorsList(postState.creatorsInfo)
 			Text(
@@ -90,9 +92,21 @@ fun PostScreen(id: String) {
 			}
 			Spacer(modifier = Modifier.height(8.dp))
 			AnimatedVisibility(post != null) {
-				SocialBar(postState.publicationInfo) {
-					showComments = true
-				}
+				SocialBar(
+					postState.publicationInfo,
+					onLikeClick = { info, user ->
+						coroutineScope.launch {
+							APIClient.toggleLike(info, user)
+							postState.refresh()
+						}
+					},
+					onCommentClick = {
+						showComments = true
+						coroutineScope.launch {
+							scrollState.animateScrollTo(Int.MAX_VALUE)
+						}
+					}
+				)
 				Spacer(modifier = Modifier.height(8.dp))
 			}
 			AnimatedVisibility(

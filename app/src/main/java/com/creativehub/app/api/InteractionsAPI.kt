@@ -2,12 +2,21 @@ package com.creativehub.app.api
 
 import com.creativehub.app.model.Comment
 import com.creativehub.app.model.Like
+import com.creativehub.app.model.PublicationInfo
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 
 suspend fun APIClient.getLikes(publicationId: String) = runCatching {
 	APIClient().get("$INTERACTIONS_BASE_URL/-/likes/count/$publicationId").body<Int>()
+}
+
+suspend fun APIClient.toggleLike(info: PublicationInfo<*>, userId: String) {
+	if (info.userLiked == true) {
+		removeLike(Like(userId, info.publication.id)).isSuccess
+	} else {
+		setLike(Like(userId, info.publication.id)).isSuccess
+	}
 }
 
 suspend fun APIClient.setLike(like: Like) = runCatching {

@@ -10,6 +10,7 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -20,6 +21,8 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.creativehub.app.R
+import com.creativehub.app.api.APIClient
+import com.creativehub.app.api.toggleLike
 import com.creativehub.app.model.Artwork
 import com.creativehub.app.model.PublicationInfo
 import com.creativehub.app.ui.LocalNavigationState
@@ -30,6 +33,7 @@ import com.creativehub.app.viewmodel.FeedStateViewModel
 import com.creativehub.app.viewmodel.LocalFeedState
 import com.creativehub.app.viewmodel.LocalUserState
 import com.creativehub.app.viewmodel.UserStateViewModel
+import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 
@@ -39,6 +43,8 @@ fun ArtworkFeedElement(info: PublicationInfo<Artwork>) {
 	val indication = LocalIndication.current
 	val context = LocalContext.current
 	val navigation = LocalNavigationState.current
+	val feedState = LocalFeedState.current
+	val coroutineScope = rememberCoroutineScope()
 	val artwork = info.publication
 	val date = artwork.creationDateTime.toLocalDateTime(TimeZone.currentSystemDefault()).year
 	Box(modifier = Modifier
@@ -62,9 +68,18 @@ fun ArtworkFeedElement(info: PublicationInfo<Artwork>) {
 					contentDescription = "image",
 					contentScale = ContentScale.FillWidth,
 				)
-				SocialBar(info) {
-					navigation.navigate(Destination.Artwork.argRoute(artwork.id))
-				}
+				SocialBar(
+					info,
+					onLikeClick = { info, user ->
+						coroutineScope.launch {
+							APIClient.toggleLike(info, user)
+							feedState.refresh()
+						}
+					},
+					onCommentClick = {
+						navigation.navigate(Destination.Artwork.argRoute(artwork.id))
+					}
+				)
 				Text(
 					text = "${artwork.name.trim()}, $date",
 					modifier = Modifier.padding(8.dp),

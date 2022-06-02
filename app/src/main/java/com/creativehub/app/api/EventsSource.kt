@@ -12,7 +12,7 @@ class EventsSource(private val userId: String?) : PagingSource<Int, PublicationI
 			else -> params.key ?: 0
 		}
 		val pageSize = params.loadSize
-		val result = APIClient.getEvents(userId, page, pageSize)
+		val result = APIClient.getEventsFeed(userId, page, pageSize)
 		val feedData = result.getOrNull()
 		val error = result.exceptionOrNull()
 		return if (feedData != null) {

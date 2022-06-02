@@ -5,13 +5,11 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
-import com.creativehub.app.api.*
-import com.creativehub.app.model.Like
-import com.creativehub.app.model.PublicationInfo
+import com.creativehub.app.api.EventsSource
+import com.creativehub.app.api.FeedSource
 import com.creativehub.app.model.User
 import com.creativehub.app.util.BusyViewModel
 import com.creativehub.app.util.InvalidatingPagingSourceFactory
-import kotlinx.coroutines.launch
 
 class FeedStateViewModel : BusyViewModel() {
 	private var user: User? = null
@@ -23,20 +21,12 @@ class FeedStateViewModel : BusyViewModel() {
 
 	fun updateFeed(user: User?) {
 		this.user = user
-		feedPagingSourceFactory.invalidate()
-		eventsPagingSourceFactory.invalidate()
+		refresh()
 	}
 
-	suspend fun toggleLike(info: PublicationInfo<*>, userId: String) {
-		if (info.userLiked == true) {
-			APIClient.removeLike(Like(userId, info.publication.id)).isSuccess
-		} else {
-			APIClient.setLike(Like(userId, info.publication.id)).isSuccess
-		}
-		viewModelScope.launch {
-			feedPagingSourceFactory.invalidate()
-			eventsPagingSourceFactory.invalidate()
-		}
+	fun refresh() {
+		feedPagingSourceFactory.invalidate()
+		eventsPagingSourceFactory.invalidate()
 	}
 }
 
