@@ -20,15 +20,17 @@ abstract class PublicationState<T : Publication>(val id: String, val user: User?
 	var userLiked by mutableStateOf<Boolean?>(null)
 	var comments by mutableStateOf<List<Comment>?>(null)
 	var commentInfos by mutableStateOf<List<CommentInfo>?>(null)
-	val publicationInfo: PublicationInfo<T>
-		get() = PublicationInfo(
-			publication!!,
-			creatorsInfo?.map { it.first },
-			likes,
-			userLiked,
-			comments,
-			comments?.size
-		)
+	val publicationInfo: PublicationInfo<T>?
+		get() = publication?.let { publication ->
+			PublicationInfo(
+				publication,
+				creatorsInfo?.map { it.first },
+				likes,
+				userLiked,
+				comments,
+				comments?.size
+			)
+		}
 
 	abstract suspend fun fetchPublication(id: String, user: User?)
 

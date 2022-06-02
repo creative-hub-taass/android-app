@@ -62,7 +62,9 @@ fun ArtworkFeedElement(info: PublicationInfo<Artwork>) {
 					contentDescription = "image",
 					contentScale = ContentScale.FillWidth,
 				)
-				SocialBar(info)
+				SocialBar(info) {
+					navigation.navigate(Destination.Artwork.argRoute(artwork.id))
+				}
 				Text(
 					text = "${artwork.name.trim()}, $date",
 					modifier = Modifier.padding(8.dp),

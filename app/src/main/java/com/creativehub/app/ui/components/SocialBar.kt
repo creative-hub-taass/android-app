@@ -31,40 +31,43 @@ import com.creativehub.app.viewmodel.LocalUserState
 import kotlinx.coroutines.launch
 
 @Composable
-fun SocialBar(info: PublicationInfo<*>) {
+fun SocialBar(
+	info: PublicationInfo<*>?,
+	onCommentClick: () -> Unit = {},
+) {
 	val userState = LocalUserState.current
 	val feedState = LocalFeedState.current
 	val navigation = LocalNavigationState.current
 	val coroutineScope = rememberCoroutineScope()
 	val user = userState.user
-	val destination = when (info.publication) {
+	val destination = when (info?.publication) {
 		is Artwork -> Destination.Artwork
 		is Event -> Destination.Event
 		is Post -> Destination.Post
+		else -> null
 	}
 	val shareIntent = Intent.createChooser(Intent().apply {
 		action = Intent.ACTION_SEND
-		putExtra(Intent.EXTRA_TEXT, info.publication.url)
+		putExtra(Intent.EXTRA_TEXT, info?.publication?.url)
 		type = "text/plain"
-	}, "Share this ${destination.label.lowercase()}")
+	}, "Share this ${destination?.label?.lowercase()}")
 	val context = LocalContext.current
-	val likeText = when (val likes = info.likes) {
+	val likeText = when (val likes = info?.likes) {
 		null, 0 -> "Be the first to like"
 		1 -> "Liked by $likes person"
 		else -> "Liked by $likes people"
 	}
-	val commentText = when (val commentsCount = info.commentsCount) {
+	val commentText = when (val commentsCount = info?.commentsCount) {
 		null, 0 -> "No comments"
 		1 -> "$commentsCount comment"
 		else -> "$commentsCount comments"
 	}
-	val userLiked = info.userLiked
+	val userLiked = info?.userLiked
 	val likeIcon = if (userLiked == true) Icons.Default.Favorite else Icons.Default.FavoriteBorder
-	val commentDestination = destination.argRoute(info.publication.id)
 	ConstraintLayout(Modifier.fillMaxWidth()) {
 		val (likeBtn, commentBtn, shareBtn, likesText, commentsText) = createRefs()
 		IconButton(onClick = {
-			if (user != null) {
+			if (user != null && info != null) {
 				coroutineScope.launch {
 					feedState.toggleLike(info, user.id)
 				}
@@ -76,8 +79,8 @@ fun SocialBar(info: PublicationInfo<*>) {
 			Icon(likeIcon, contentDescription = "like")
 		}
 		IconButton(onClick = {
-			if (userState.isLoggedIn) {
-				navigation.navigate(commentDestination)
+			if (userState.isLoggedIn && info != null) {
+				onCommentClick()
 			} else navigation.navigate(Destination.Login.route)
 		}, modifier = Modifier.constrainAs(commentBtn) {
 			start.linkTo(likeBtn.end)

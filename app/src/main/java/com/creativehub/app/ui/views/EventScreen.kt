@@ -70,6 +70,7 @@ fun EventScreen(id: String) {
 				style = Typography.h6
 			)
 			AsyncImage(
+				modifier = Modifier.fillMaxWidth(),
 				model = ImageRequest.Builder(LocalContext.current)
 					.data(event?.image)
 					.crossfade(true)
@@ -78,10 +79,11 @@ fun EventScreen(id: String) {
 				error = painterResource(R.drawable.placeholder),
 				contentDescription = "image",
 				contentScale = ContentScale.FillWidth,
-				modifier = Modifier.fillMaxWidth()
 			)
 			AnimatedVisibility(event != null) {
-				SocialBar(info = eventState.publicationInfo)
+				SocialBar(eventState.publicationInfo) {
+					showComments = true
+				}
 				Spacer(modifier = Modifier.height(8.dp))
 			}
 			if (event == null || event.description.isNotBlank()) {
@@ -151,4 +153,3 @@ fun EventScreen(id: String) {
 		}
 	}
 }
-

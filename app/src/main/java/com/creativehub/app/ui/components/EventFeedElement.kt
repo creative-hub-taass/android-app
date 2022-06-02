@@ -92,7 +92,9 @@ fun EventFeedElement(info: PublicationInfo<Event>) {
 						)
 					}
 				}
-				SocialBar(info)
+				SocialBar(info) {
+					navigation.navigate(Destination.Event.argRoute(event.id))
+				}
 				Text(
 					text = event.name.trim(),
 					modifier = Modifier.padding(8.dp),

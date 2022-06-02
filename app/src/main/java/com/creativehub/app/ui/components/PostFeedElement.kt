@@ -69,7 +69,9 @@ fun PostFeedElement(info: PublicationInfo<Post>) {
 						.alpha(0.7f),
 					style = Typography.caption,
 				)
-				SocialBar(info)
+				SocialBar(info) {
+					navigation.navigate(Destination.Post.argRoute(post.id))
+				}
 			}
 		}
 	}
