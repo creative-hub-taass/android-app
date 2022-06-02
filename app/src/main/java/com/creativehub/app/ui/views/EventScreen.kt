@@ -35,6 +35,9 @@ import com.creativehub.app.ui.theme.Typography
 import com.creativehub.app.util.formatDates
 import com.creativehub.app.viewmodel.LocalUserState
 import com.creativehub.app.viewmodel.rememberEventState
+import com.google.accompanist.placeholder.PlaceholderHighlight
+import com.google.accompanist.placeholder.material.placeholder
+import com.google.accompanist.placeholder.material.shimmer
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import java.time.format.FormatStyle
@@ -58,61 +61,77 @@ fun EventScreen(id: String) {
 				.padding(bottom = 16.dp)
 		) {
 			CreatorsList(eventState.creatorsInfo)
-			if (event != null) {
-				Text(
-					text = event.name.trim(),
-					modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
-					style = Typography.h6
-				)
-				AsyncImage(
-					model = ImageRequest.Builder(LocalContext.current)
-						.data(event.image)
-						.crossfade(true)
-						.build(),
-					placeholder = painterResource(R.drawable.placeholder),
-					error = painterResource(R.drawable.placeholder),
-					contentDescription = "image",
-					contentScale = ContentScale.FillWidth,
-					modifier = Modifier.fillMaxWidth()
-				)
+			Text(
+				text = event?.name?.trim() ?: "",
+				modifier = Modifier
+					.padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
+					.placeholder(event == null, highlight = PlaceholderHighlight.shimmer())
+					.fillMaxWidth(),
+				style = Typography.h6
+			)
+			AsyncImage(
+				model = ImageRequest.Builder(LocalContext.current)
+					.data(event?.image)
+					.crossfade(true)
+					.build(),
+				placeholder = painterResource(R.drawable.placeholder),
+				error = painterResource(R.drawable.placeholder),
+				contentDescription = "image",
+				contentScale = ContentScale.FillWidth,
+				modifier = Modifier.fillMaxWidth()
+			)
+			AnimatedVisibility(event != null) {
 				SocialBar(info = eventState.publicationInfo)
-				if (event.description.isNotBlank()) {
-					Text(
-						text = event.description,
-						modifier = Modifier.padding(8.dp),
-						style = Typography.body1
-					)
-				}
-				Row(
-					verticalAlignment = Alignment.CenterVertically
-				) {
-					Icon(
-						imageVector = Icons.Rounded.CalendarToday,
-						contentDescription = "Icon",
-						modifier = Modifier
-							.padding(8.dp)
-							.alpha(0.5f)
-					)
-					Text(
-						text = event.formatDates(R.string.from_to_dates, dateStyle = FormatStyle.MEDIUM)
-					)
-				}
-				MapElement(event.coordinates.latitude, event.coordinates.longitude, event.locationName)
-				Row(
-					verticalAlignment = Alignment.CenterVertically
-				) {
-					Icon(
-						imageVector = Icons.Rounded.Place,
-						contentDescription = "Icon",
-						modifier = Modifier
-							.padding(8.dp)
-							.alpha(0.5f)
-					)
-					Text(
-						text = event.locationName
-					)
-				}
+				Spacer(modifier = Modifier.height(8.dp))
 			}
+			if (event == null || event.description.isNotBlank()) {
+				Text(
+					text = event?.description ?: "",
+					modifier = Modifier
+						.padding(8.dp)
+						.placeholder(event == null, highlight = PlaceholderHighlight.shimmer())
+						.fillMaxWidth(),
+					style = Typography.body1
+				)
+			}
+			Row(
+				modifier = Modifier.padding(8.dp),
+				verticalAlignment = Alignment.CenterVertically
+			) {
+				Icon(
+					imageVector = Icons.Rounded.CalendarToday,
+					contentDescription = "Icon",
+					modifier = Modifier
+						.padding(end = 8.dp)
+						.alpha(0.5f)
+				)
+				Text(
+					text = event?.formatDates(R.string.from_to_dates, dateStyle = FormatStyle.MEDIUM) ?: "",
+					modifier = Modifier
+						.placeholder(event == null, highlight = PlaceholderHighlight.shimmer())
+						.fillMaxWidth()
+				)
+			}
+			Row(
+				modifier = Modifier.padding(8.dp),
+				verticalAlignment = Alignment.CenterVertically
+			) {
+				Icon(
+					imageVector = Icons.Rounded.Place,
+					contentDescription = "Icon",
+					modifier = Modifier
+						.padding(end = 8.dp)
+						.alpha(0.5f)
+				)
+				Text(
+					text = event?.locationName ?: "",
+					modifier = Modifier
+						.placeholder(event == null, highlight = PlaceholderHighlight.shimmer())
+						.fillMaxWidth()
+				)
+			}
+			Spacer(modifier = Modifier.height(8.dp))
+			MapElement(event?.let { listOf(event) })
 			Spacer(modifier = Modifier.height(8.dp))
 			AnimatedVisibility(
 				visible = !eventState.commentInfos.isNullOrEmpty(),

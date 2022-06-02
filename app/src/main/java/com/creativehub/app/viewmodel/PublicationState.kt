@@ -101,6 +101,7 @@ abstract class PublicationState<T : Publication>(val id: String, val user: User?
 	}
 
 	companion object {
+		@Suppress("UNCHECKED_CAST")
 		fun <T : Publication, P : PublicationState<T>> Saver(): Saver<P, String> = object : Saver<P, String> {
 			override fun restore(value: String): P? {
 				val jsonObject = Json.decodeFromString<JsonObject>(value)

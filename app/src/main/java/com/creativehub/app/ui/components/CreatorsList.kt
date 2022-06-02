@@ -37,7 +37,7 @@ import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.material.shimmer
 
 @Composable
-fun CreatorsList(creators: List<Pair<PublicUser, CreationType>>?) {
+fun CreatorsList(creators: List<Pair<PublicUser, CreationType?>>?) {
 	val context = LocalContext.current
 	val navigation = LocalNavigationState.current
 	val scrollState = rememberScrollState()
@@ -54,48 +54,61 @@ fun CreatorsList(creators: List<Pair<PublicUser, CreationType>>?) {
 		verticalArrangement = Arrangement.Top,
 		horizontalAlignment = Alignment.Start
 	) {
-		creators?.forEach { (creator, type) ->
+		creators?.forEach { (user, type) ->
+			val creator = user.creator
 			Row(
 				modifier = Modifier
 					.padding(bottom = 4.dp)
-					.clickable { navigation.navigate(Destination.Creator.argRoute(creator.id)) },
+					.then(if (creator != null) {
+						Modifier.clickable {
+							navigation.navigate(Destination.Creator.argRoute(user.id))
+						}
+					} else Modifier),
 				horizontalArrangement = Arrangement.Start,
 				verticalAlignment = Alignment.CenterVertically
 			) {
-				AsyncImage(
-					model = ImageRequest.Builder(context)
-						.data(creator.creator?.avatar)
-						.crossfade(true)
-						.build(),
-					contentDescription = "profile picture",
-					modifier = Modifier
-						.size(32.dp)
-						.border(1.dp, Color.Gray.copy(alpha = 0.5f), CircleShape)
-						.clip(CircleShape),
-					contentScale = ContentScale.Crop
-				)
-				Column {
+				if (creator != null) {
+					AsyncImage(
+						model = ImageRequest.Builder(context)
+							.data(creator.avatar)
+							.crossfade(true)
+							.build(),
+						contentDescription = "profile picture",
+						modifier = Modifier
+							.padding(end = 8.dp)
+							.size(32.dp)
+							.border(1.dp, Color.Gray.copy(alpha = 0.5f), CircleShape)
+							.clip(CircleShape),
+						contentScale = ContentScale.Crop
+					)
+				}
+				Column(
+					verticalArrangement = Arrangement.Center,
+					horizontalAlignment = Alignment.Start
+				) {
 					Text(
-						text = creator.nickname,
-						modifier = Modifier.padding(start = 8.dp),
+						text = user.nickname,
 						style = Typography.body1,
 						fontWeight = FontWeight.Bold
 					)
+					if (creator != null) {
+						Text(
+							text = "@${user.username}",
+							style = Typography.caption,
+						)
+					}
+				}
+				if (type != null) {
 					Text(
-						text = "@${creator.username}",
-						modifier = Modifier.padding(start = 8.dp),
+						modifier = Modifier
+							.padding(start = 8.dp, top = 1.dp)
+							.alpha(0.7f)
+							.border(1.dp, MaterialTheme.colors.onBackground, Shapes.small)
+							.padding(4.dp, 2.dp),
+						text = type.name.toUpperCase(LocaleList.current),
 						style = Typography.caption,
 					)
 				}
-				Text(
-					modifier = Modifier
-						.padding(start = 8.dp, top = 1.dp)
-						.alpha(0.6f)
-						.border(1.dp, MaterialTheme.colors.onBackground, Shapes.small)
-						.padding(4.dp, 2.dp),
-					text = type.name.toUpperCase(LocaleList.current),
-					style = Typography.caption,
-				)
 			}
 		}
 	}

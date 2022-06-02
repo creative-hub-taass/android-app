@@ -97,7 +97,7 @@ fun SocialBar(info: PublicationInfo<*>) {
 			text = likeText,
 			style = Typography.subtitle2,
 			modifier = Modifier
-				.alpha(0.66f)
+				.alpha(0.7f)
 				.constrainAs(likesText) {
 					start.linkTo(parent.start, 8.dp)
 					top.linkTo(likeBtn.bottom)
@@ -107,7 +107,7 @@ fun SocialBar(info: PublicationInfo<*>) {
 			text = commentText,
 			style = Typography.subtitle2,
 			modifier = Modifier
-				.alpha(0.66f)
+				.alpha(0.7f)
 				.constrainAs(commentsText) {
 					end.linkTo(parent.end, 8.dp)
 					top.linkTo(likesText.top)

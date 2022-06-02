@@ -99,9 +99,27 @@ fun getPreviewPost(): PublicationInfo<Post> {
 }
 
 fun getPreviewComments(publicationId: String) = listOf(
-	Comment(UUID.randomUUID().toString(), UUID.randomUUID().toString(), publicationId, "Test comment"),
-	Comment(UUID.randomUUID().toString(), UUID.randomUUID().toString(), publicationId, "Lorem ipsum dolor sit amet."),
-	Comment(UUID.randomUUID().toString(), UUID.randomUUID().toString(), publicationId, "Test unicode \uD83D\uDC4D")
+	Comment(
+		UUID.randomUUID().toString(),
+		UUID.randomUUID().toString(),
+		publicationId,
+		"Test comment",
+		Clock.System.now()
+	),
+	Comment(
+		UUID.randomUUID().toString(),
+		UUID.randomUUID().toString(),
+		publicationId,
+		"Lorem ipsum dolor sit amet.",
+		Clock.System.now()
+	),
+	Comment(
+		UUID.randomUUID().toString(),
+		UUID.randomUUID().toString(),
+		publicationId,
+		"Test unicode \uD83D\uDC4D",
+		Clock.System.now()
+	)
 )
 
 fun getPreviewCreations(): List<Pair<PublicUser, CreationType>> = listOf(
