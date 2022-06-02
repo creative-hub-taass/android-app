@@ -2,11 +2,10 @@ plugins {
 	id 'com.android.application'
 	id 'org.jetbrains.kotlin.android'
 	id 'org.jetbrains.kotlin.plugin.serialization' version '1.6.10'
-	id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
 }
 
-
 android {
+	namespace "com.creativehub.app"
 	compileSdk 31
 	defaultConfig {
 		applicationId "com.creativehub.app"
@@ -46,7 +45,6 @@ android {
 			excludes += '/META-INF/{AL2.0,LGPL2.1}'
 		}
 	}
-	namespace "com.creativehub.app"
 }
 
 dependencies {
