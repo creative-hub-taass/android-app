@@ -51,11 +51,14 @@ abstract class PublicationState<T : Publication>(val id: String, val user: User?
 	}
 
 	private suspend fun fetchUsersOfComments(): List<CommentInfo>? {
-		val users = comments?.mapTo(mutableSetOf()) { it.userId } ?: emptySet()
-		val result = APIClient.getListUsers(users.toList()).getOrDefault(emptyList())
-		return comments?.mapNotNull { comment ->
-			val user = result.find { it.id == comment.userId }
-			user?.let { CommentInfo(comment, it) }
+		val users = comments?.mapTo(mutableSetOf()) { it.userId }.orEmpty()
+		val result = when {
+			users.isEmpty() -> emptyList()
+			else -> APIClient.getCreators(users.toList()).getOrDefault(emptyList())
+		}
+		return comments?.map { comment ->
+			val user = result.find { comment.userId == it?.id }
+			CommentInfo(comment, user)
 		}
 	}
 

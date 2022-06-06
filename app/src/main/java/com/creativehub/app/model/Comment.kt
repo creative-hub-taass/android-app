@@ -15,5 +15,5 @@ data class Comment(
 @Serializable
 class CommentInfo(
 	val comment: Comment,
-	val user: PublicUser,
+	val user: PublicUser?,
 )
