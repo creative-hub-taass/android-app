@@ -14,8 +14,9 @@ suspend fun APIClient.login(email: String, password: String) = runCatching {
 		contentType(ContentType.Application.Json)
 		setBody(LoginRequest(email, password))
 	}
-	extractTokens(response)
-	response.body<User>()
+	val tokens = extractTokens(response)
+	val user = response.body<User>()
+	Pair(user, tokens)
 }
 
 suspend fun APIClient.socialLogin(email: String, nickname: String, token: String) = runCatching {
@@ -23,8 +24,9 @@ suspend fun APIClient.socialLogin(email: String, nickname: String, token: String
 		contentType(ContentType.Application.Json)
 		setBody(SocialLoginRequest(email, nickname, token))
 	}
-	extractTokens(response)
-	response.body<User>()
+	val tokens = extractTokens(response)
+	val user = response.body<User>()
+	Pair(user, tokens)
 }
 
 suspend fun APIClient.register(nickname: String, email: String, password: String) = runCatching {
@@ -32,4 +34,8 @@ suspend fun APIClient.register(nickname: String, email: String, password: String
 		contentType(ContentType.Application.Json)
 		setBody(RegistrationRequest(nickname, email, password))
 	}.bodyAsText()
+}
+
+suspend fun APIClient.getUser(userId: String) = runCatching {
+	APIClient().get("$USERS_BASE_URL/$userId").body<User>()
 }

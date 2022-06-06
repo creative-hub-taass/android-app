@@ -23,7 +23,7 @@ fun CreativeHubNavHost(modifier: Modifier) {
 	val startDestination = Destination.getStartDestination()
 	val coroutineScope = rememberCoroutineScope()
 	LaunchedEffect(Unit) {
-		userState.tryGoogleAutoSignIn(context)
+		userState.tryAutoLogin(context)
 	}
 	NavHost(
 		navController = navigation,
@@ -57,7 +57,7 @@ fun CreativeHubNavHost(modifier: Modifier) {
 			LoginScreen(
 				{ email, password ->
 					coroutineScope.launch {
-						val result = userState.login(email, password)
+						val result = userState.login(email, password, context)
 						if (result != null) {
 							Toast.makeText(context, result, Toast.LENGTH_SHORT).show()
 						}
@@ -65,7 +65,7 @@ fun CreativeHubNavHost(modifier: Modifier) {
 				},
 				{ email, nickname, token ->
 					coroutineScope.launch {
-						val result = userState.socialLogin(email, nickname, token)
+						val result = userState.socialLogin(email, nickname, token, context)
 						if (result != null) {
 							Toast.makeText(context, result, Toast.LENGTH_SHORT).show()
 						}

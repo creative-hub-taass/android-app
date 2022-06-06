@@ -65,6 +65,10 @@ object APIClient {
 		return tokens
 	}
 
+	fun setTokens(tokens: BearerTokens) {
+		bearerTokenStorage.add(tokens)
+	}
+
 	fun logout() {
 		bearerTokenStorage.clear()
 	}

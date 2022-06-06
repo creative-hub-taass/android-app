@@ -5,6 +5,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -13,12 +14,14 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.creativehub.app.ui.LocalNavigationState
 import com.creativehub.app.ui.navigation.Destination
 import com.creativehub.app.viewmodel.LocalUserState
+import kotlinx.coroutines.launch
 
 @Composable
 fun AppBar() {
 	val userState = LocalUserState.current
 	val context = LocalContext.current
 	val navigation = LocalNavigationState.current
+	val coroutineScope = rememberCoroutineScope()
 	val backstackEntry = navigation.currentBackStackEntryAsState()
 	val currentScreen = backstackEntry.value?.destination?.route
 	if (currentScreen?.contains(Destination.Home.route) == true) {
@@ -34,8 +37,10 @@ fun AppBar() {
 			actions = {
 				AnimatedVisibility(userState.isLoggedIn) {
 					IconButton(onClick = {
-						userState.logout(context)
-						navigation.navigate(Destination.Login.route)
+						coroutineScope.launch {
+							userState.logout(context)
+							navigation.navigate(Destination.Login.route)
+						}
 					}) {
 						Icon(Icons.Filled.Logout, "Logout")
 					}
