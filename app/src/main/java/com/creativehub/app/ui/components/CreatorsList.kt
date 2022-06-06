@@ -17,6 +17,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.intl.LocaleList
 import androidx.compose.ui.text.toUpperCase
@@ -25,8 +26,9 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.creativehub.app.R
 import com.creativehub.app.model.CreationType
-import com.creativehub.app.model.PublicUser
+import com.creativehub.app.model.IPublicUser
 import com.creativehub.app.ui.LocalNavigationState
 import com.creativehub.app.ui.navigation.Destination
 import com.creativehub.app.ui.theme.Shapes
@@ -37,7 +39,7 @@ import com.google.accompanist.placeholder.material.placeholder
 import com.google.accompanist.placeholder.material.shimmer
 
 @Composable
-fun CreatorsList(creators: List<Pair<PublicUser, CreationType?>>?) {
+fun CreatorsList(creators: List<Pair<IPublicUser?, CreationType?>>?) {
 	val context = LocalContext.current
 	val navigation = LocalNavigationState.current
 	val scrollState = rememberScrollState()
@@ -55,7 +57,7 @@ fun CreatorsList(creators: List<Pair<PublicUser, CreationType?>>?) {
 		horizontalAlignment = Alignment.Start
 	) {
 		creators?.forEach { (user, type) ->
-			val creator = user.creator
+			val creator = user?.creator
 			Row(
 				modifier = Modifier
 					.padding(bottom = 4.dp)
@@ -79,7 +81,9 @@ fun CreatorsList(creators: List<Pair<PublicUser, CreationType?>>?) {
 							.size(32.dp)
 							.border(1.dp, Color.Gray.copy(alpha = 0.5f), CircleShape)
 							.clip(CircleShape),
-						contentScale = ContentScale.Crop
+						contentScale = ContentScale.Crop,
+						error = painterResource(R.drawable.placeholder),
+						placeholder = painterResource(R.drawable.placeholder),
 					)
 				}
 				Column(
@@ -87,7 +91,7 @@ fun CreatorsList(creators: List<Pair<PublicUser, CreationType?>>?) {
 					horizontalAlignment = Alignment.Start
 				) {
 					Text(
-						text = user.nickname,
+						text = user?.nickname ?: "Deleted user",
 						style = Typography.body1,
 						fontWeight = FontWeight.Bold
 					)

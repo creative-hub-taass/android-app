@@ -12,7 +12,7 @@ suspend fun APIClient.getCreators(ids: List<String>) = runCatching {
 	APIClient().post("$USERS_BASE_URL/-/public") {
 		contentType(ContentType.Application.Json)
 		setBody(ids)
-	}.body<List<PublicUser>>()
+	}.body<List<PublicUser?>>()
 }
 
 suspend fun APIClient.getArtwork(artworkId: String) = runCatching {

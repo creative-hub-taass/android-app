@@ -66,6 +66,7 @@ fun PortfolioCreatorTab(creatorState: CreatorState) {
 					.aspectRatio(1f)
 					.padding(1.dp)
 					.clickable { navigation.navigate(Destination.Artwork.argRoute(it.id)) },
+				error = painterResource(R.drawable.placeholder),
 				placeholder = painterResource(R.drawable.placeholder),
 				contentDescription = "image",
 				contentScale = ContentScale.Crop,

@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -22,6 +23,7 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.creativehub.app.R
 import com.creativehub.app.model.PublicationInfo
 import com.creativehub.app.ui.LocalNavigationState
 import com.creativehub.app.ui.navigation.Destination
@@ -45,7 +47,7 @@ fun CreatorsBar(info: PublicationInfo<*>) {
 			for ((i, creator) in creators.withIndex()) {
 				AsyncImage(
 					model = ImageRequest.Builder(context)
-						.data(creator.creator?.avatar)
+						.data(creator?.creator?.avatar)
 						.crossfade(true)
 						.build(),
 					contentDescription = "profile picture",
@@ -55,17 +57,27 @@ fun CreatorsBar(info: PublicationInfo<*>) {
 						.size(33.dp)
 						.border(1.dp, MaterialTheme.colors.onSurface, CircleShape)
 						.clip(CircleShape)
-						.clickable { navigation.navigate(Destination.Creator.argRoute(creator.id)) },
-					contentScale = ContentScale.Crop
+						.then(if (creator != null) {
+							Modifier.clickable {
+								navigation.navigate(Destination.Creator.argRoute(creator.id))
+							}
+						} else Modifier),
+					contentScale = ContentScale.Crop,
+					error = painterResource(R.drawable.placeholder),
+					placeholder = painterResource(R.drawable.placeholder),
 				)
 			}
 		}
 		for ((i, creator) in creators.withIndex()) {
 			Text(
-				text = creator.nickname,
+				text = creator?.nickname ?: "Deleted user",
 				modifier = Modifier
 					.padding(start = 4.dp)
-					.clickable { navigation.navigate(Destination.Creator.argRoute(creator.id)) },
+					.then(if (creator != null) {
+						Modifier.clickable {
+							navigation.navigate(Destination.Creator.argRoute(creator.id))
+						}
+					} else Modifier),
 				style = Typography.body1,
 				fontWeight = FontWeight.Bold
 			)

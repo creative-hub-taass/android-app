@@ -5,6 +5,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import com.creativehub.app.model.Event
+import com.creativehub.app.model.IPublicUser
+import com.creativehub.app.model.PublicCreator
+import com.creativehub.app.model.PublicUser
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import kotlinx.datetime.TimeZone
@@ -55,4 +58,21 @@ fun Collection<LatLng>.toLatLngBounds(): LatLngBounds {
 	return LatLngBounds.Builder().apply {
 		forEach { include(it) }
 	}.build()
+}
+
+fun IPublicUser.toPublicUser(): PublicUser {
+	return PublicUser(
+		id,
+		username,
+		nickname,
+		creator?.run {
+			PublicCreator(
+				bio,
+				creatorType,
+				avatar
+			)
+		},
+		inspirerIds,
+		fanIds
+	)
 }

@@ -15,7 +15,7 @@ abstract class PublicationState<T : Publication>(val id: String, val user: User?
 	private var rememberScope: CoroutineScope? = null
 	var isLoading by mutableStateOf(false)
 	var publication by mutableStateOf<T?>(null)
-	var creatorsInfo by mutableStateOf<List<Pair<PublicUser, CreationType>>?>(null)
+	var creatorsInfo by mutableStateOf<List<Pair<PublicUser?, CreationType>>?>(null)
 	var likes by mutableStateOf<Int?>(null)
 	var userLiked by mutableStateOf<Boolean?>(null)
 	var comments by mutableStateOf<List<Comment>?>(null)
@@ -39,7 +39,6 @@ abstract class PublicationState<T : Publication>(val id: String, val user: User?
 		if (publication != null) {
 			this.creatorsInfo = APIClient.getCreators(publication.creations.map { it.user }).map { list ->
 				list.zip(publication.creations)
-					.filter { it.first.id == it.second.user }
 					.map { Pair(it.first, it.second.creationType) }
 			}.getOrNull()
 			this.likes = APIClient.getLikes(id).getOrNull()

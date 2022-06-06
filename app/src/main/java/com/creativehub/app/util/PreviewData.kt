@@ -3,6 +3,7 @@ package com.creativehub.app.util
 import com.creativehub.app.model.*
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDate
 import java.util.*
 
 fun getPreviewArtwork(): PublicationInfo<Artwork> {
@@ -35,7 +36,7 @@ fun getPreviewArtwork(): PublicationInfo<Artwork> {
 		paymentEmail = "pay@creativehub.com",
 		availableCopies = 1
 	)
-	val creators = creations.map { it.first }
+	val creators = creations.map { it.first.toPublicUser() }
 	val likes = 15
 	val comments = getPreviewComments(id)
 	val commentsCount = comments.size
@@ -66,7 +67,7 @@ fun getPreviewEvent(): PublicationInfo<Event> {
 		coordinates = Event.Coordinates(40.750118, -74.005277),
 		bookingURL = "https://www.artsy.net/show/gallery-henoch-eric-zener-rising",
 	)
-	val creators = creations.map { it.first }
+	val creators = creations.map { it.first.toPublicUser() }
 	val likes = 15
 	val comments = getPreviewComments(id)
 	val commentsCount = comments.size
@@ -91,7 +92,7 @@ fun getPreviewPost(): PublicationInfo<Post> {
 		title = "Lorem ipsum dolor sit amet",
 		body = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur sagittis ipsum ultricies dolor mollis, id interdum lorem euismod. Morbi sit amet urna felis. Donec rhoncus tempor ligula vel tincidunt. Vestibulum congue urna a est tempor semper vel quis diam. Nullam vitae est at risus placerat porta at dictum turpis. Morbi volutpat sem ante, non ornare massa tincidunt nec. Phasellus egestas neque et justo venenatis, id varius turpis consequat. Nullam interdum porttitor dapibus. Donec congue ante et risus hendrerit tincidunt.\nQuisque semper tempor arcu, nec dictum neque egestas vel. Sed ultricies massa nisl, et porta mi ultricies vel. In elementum diam porttitor tincidunt gravida. Ut nisl metus, porttitor nec lorem in, porta aliquam tellus. Suspendisse ipsum felis, porttitor sit amet orci eu, dictum pretium dolor. Donec euismod, nisi eget mattis venenatis, diam elit placerat nulla, eu hendrerit felis nisi id risus. Quisque mollis ut lacus vitae dapibus. Vivamus sed elit arcu. Aliquam erat volutpat. Maecenas pulvinar feugiat eros at tristique. Aliquam auctor iaculis facilisis. Nulla facilisi. Quisque bibendum enim in sapien sodales lobortis. Nullam sagittis ligula id risus posuere ultrices. Curabitur molestie cursus justo, non condimentum mauris bibendum in. Pellentesque molestie, ex ut ornare viverra, est felis venenatis ex, sit amet tempor justo ex at nunc.\nDonec accumsan orci quis tristique finibus. Nullam quis sagittis mi. Suspendisse id tortor at lorem efficitur vehicula. Vivamus est arcu, posuere quis pellentesque non, placerat eget ligula. Mauris ut venenatis augue. Fusce tincidunt id sem eu porta. Proin sodales sapien eget vulputate euismod. Praesent tincidunt urna pulvinar, auctor diam quis, sagittis tortor. Ut dignissim iaculis vestibulum. Praesent id tortor tempor, lacinia nisl nec, dignissim leo. Suspendisse potenti. Etiam facilisis, metus nec consequat pulvinar, orci nunc sollicitudin lectus, eu vestibulum eros urna vitae nunc. Fusce in pharetra felis. Etiam vel arcu et est vestibulum finibus. Fusce risus lectus, blandit ut lectus vel, volutpat sodales nibh.",
 	)
-	val creators = creations.map { it.first }
+	val creators = creations.map { it.first.toPublicUser() }
 	val likes = 15
 	val comments = getPreviewComments(id)
 	val commentsCount = comments.size
@@ -122,17 +123,22 @@ fun getPreviewComments(publicationId: String) = listOf(
 	)
 )
 
-fun getPreviewCreations(): List<Pair<PublicUser, CreationType>> = listOf(
+fun getPreviewCreations(): List<Pair<IPublicUser, CreationType>> = listOf(
 	getPreviewCreator() to CreationType.AUTHOR,
 	getPreviewCreator() to CreationType.COAUTHOR
 )
 
-fun getPreviewCreator() = PublicUser(
+fun getPreviewCreator() = User(
 	id = UUID.randomUUID().toString(),
 	username = "marcel-breuer",
 	nickname = "Marcel Breuer",
-	creator = PublicCreator(
-		id = UUID.randomUUID().toString(),
+	email = "marcel-breuer@creativehub.com",
+	role = Role.USER,
+	creator = Creator(
+		name = "Marcel",
+		surname = "Breuer",
+		birthDate = LocalDate(1921, 12, 3),
+		paymentEmail = "marcel-breuer@creativehub.com",
 		bio = "Marcel Breuer holds a legacy as an accomplished architect, furniture designer, and master of Modernism who pioneered the design of tubular steel furniture. During the 1920s, Breuer studied and taught at the Bauhaus in Germany, where his curriculum was equally focused on visual art as it was concerned with technology and industrial production. During this time, Breuer became acquainted with modern architects Walter Gropius, Le Corbusier, and Mies van der Rohe, all of whom would heavily influence his work. By 1935, Breuer had established a reputation as a sought-after designer, known for his steel furniture and the Wassily chair, so named after its production due to an anecdotal connection to Kandinsky (who had admired the design and commissioned a duplicate for his home). Upon WWII, Breuer followed Gropius to London, moved on to teach architecture at Harvard University, and later established his own New York-based firm and designed the Whitney Museum.",
 		creatorType = "ARTIST",
 		avatar = "https://d32dm0rphc51dk.cloudfront.net/0HJBjhMKIe9zGYEALt-22Q/large.jpg"

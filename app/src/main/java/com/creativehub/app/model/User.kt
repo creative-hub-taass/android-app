@@ -6,7 +6,7 @@ enum class Role {
 	USER, ADMIN
 }
 
-interface IPublicUser {
+sealed interface IPublicUser {
 	val id: String
 	val username: String
 	val nickname: String
@@ -16,7 +16,7 @@ interface IPublicUser {
 }
 
 @Serializable
-open class PublicUser(
+class PublicUser(
 	override val id: String,
 	override val username: String,
 	override val nickname: String,

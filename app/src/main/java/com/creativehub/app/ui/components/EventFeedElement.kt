@@ -66,6 +66,7 @@ fun EventFeedElement(info: PublicationInfo<Event>) {
 							.crossfade(true)
 							.build(),
 						modifier = Modifier.fillMaxWidth(),
+						error = painterResource(R.drawable.placeholder),
 						placeholder = painterResource(R.drawable.placeholder),
 						contentDescription = "image",
 						contentScale = ContentScale.FillWidth,

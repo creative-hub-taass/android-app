@@ -60,7 +60,7 @@ fun CollabsCreatorTab(creatorState: CreatorState) {
 	}
 	val artistIds = items.flatMap { it.creations }.map { it.user }.toSet().toList()
 	val allCreators by rememberState(artistIds) { list ->
-		APIClient.getCreators(list).getOrNull()?.associateBy { it.id }
+		APIClient.getCreators(list).getOrNull()?.associateBy { it?.id }
 	}
 	var width = configuration.screenWidthDp.toDouble()
 	val height = when (items.size) {
@@ -79,7 +79,7 @@ fun CollabsCreatorTab(creatorState: CreatorState) {
 		verticalArrangement = Arrangement.Top,
 	) {
 		items(items) { publication ->
-			val creators = publication.creations.mapNotNull { allCreators?.get(it.user) }
+			val creators = publication.creations.map { allCreators?.get(it.user) }
 			val image = when (publication) {
 				is Artwork -> publication.images.first()
 				is Event -> publication.image
@@ -101,6 +101,7 @@ fun CollabsCreatorTab(creatorState: CreatorState) {
 						.aspectRatio(1f)
 						.padding(1.dp)
 						.clickable { navigation.navigate(Destination.Artwork.argRoute(publication.id)) },
+					error = painterResource(R.drawable.placeholder),
 					placeholder = painterResource(R.drawable.placeholder),
 					contentDescription = "image",
 					contentScale = ContentScale.Crop,
@@ -111,7 +112,7 @@ fun CollabsCreatorTab(creatorState: CreatorState) {
 					for ((i, creator) in creators.withIndex()) {
 						AsyncImage(
 							model = ImageRequest.Builder(context)
-								.data(creator.creator?.avatar)
+								.data(creator?.creator?.avatar)
 								.crossfade(true)
 								.build(),
 							contentDescription = "profile picture",
@@ -121,8 +122,14 @@ fun CollabsCreatorTab(creatorState: CreatorState) {
 								.size(34.dp)
 								.border(2.dp, Color.White, CircleShape)
 								.clip(CircleShape)
-								.clickable { navigation.navigate(Destination.Creator.argRoute(creator.id)) },
-							contentScale = ContentScale.Crop
+								.then(if (creator != null) {
+									Modifier.clickable {
+										navigation.navigate(Destination.Creator.argRoute(creator.id))
+									}
+								} else Modifier),
+							contentScale = ContentScale.Crop,
+							error = painterResource(R.drawable.placeholder),
+							placeholder = painterResource(R.drawable.placeholder),
 						)
 					}
 				}
