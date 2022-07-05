@@ -85,6 +85,11 @@ fun CollabsCreatorTab(creatorState: CreatorState) {
 				is Event -> publication.image
 				else -> null
 			}
+			val destination = when (publication) {
+				is Artwork -> Destination.Artwork
+				is Event -> Destination.Event
+				is Post -> Destination.Post
+			}.argRoute(publication.id)
 			Box(
 				modifier = Modifier
 					.fillMaxWidth()
@@ -100,7 +105,7 @@ fun CollabsCreatorTab(creatorState: CreatorState) {
 						.fillMaxWidth()
 						.aspectRatio(1f)
 						.padding(1.dp)
-						.clickable { navigation.navigate(Destination.Artwork.argRoute(publication.id)) },
+						.clickable { navigation.navigate(destination) },
 					error = painterResource(R.drawable.placeholder),
 					placeholder = painterResource(R.drawable.placeholder),
 					contentDescription = "image",

@@ -56,6 +56,8 @@ fun ProfileScreen() {
 						onClick = {
 							navigation.navigate(Destination.Creator.argRoute(user.id))
 						},
+						backgroundColor = MaterialTheme.colors.primary,
+						contentColor = MaterialTheme.colors.onPrimary,
 					)
 				} else {
 					ExtendedFloatingActionButton(
@@ -68,6 +70,8 @@ fun ProfileScreen() {
 						onClick = {
 							uriHandler.openUri("${BuildConfig.CLIENT_URL}/upgrade-request")
 						},
+						backgroundColor = MaterialTheme.colors.primary,
+						contentColor = MaterialTheme.colors.onPrimary,
 					)
 				}
 			}
